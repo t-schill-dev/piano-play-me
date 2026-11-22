@@ -1,138 +1,15 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>Piano Listener</title>
-<style>
-  :root {
-    --bg: #fbf7f0; --ink: #2c2a33; --muted: #6b6775; --card: #ffffff;
-    --line: #e6dfd3; --accent: #3f7d6e; --accent-ink: #ffffff;
-    --heard: #f2b33d; --target: #7cc4ae; --yes: #2f8f5b; --soft: #8a5a9e;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--bg); color: var(--ink);
-    font-family: -apple-system, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
-    -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
-  main { max-width: 1100px; margin: 0 auto; padding: 16px 16px 40px; }
-  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  h1 { font-size: 26px; margin: 4px 0; letter-spacing: .2px; }
-  .sub { color: var(--muted); margin: 0; font-size: 15px; }
-
-  .start { display: block; margin: 28px auto; padding: 22px 48px; font-size: 28px; font-weight: 700;
-    border: 0; border-radius: 999px; background: var(--accent); color: var(--accent-ink);
-    box-shadow: 0 6px 0 #2b5a4f; cursor: pointer; }
-  .start:active { transform: translateY(3px); box-shadow: 0 3px 0 #2b5a4f; }
-  .hidden { display: none !important; }
-  .err { background: #fff1ec; border: 1px solid #f0c8b8; padding: 12px 14px; border-radius: 12px; margin: 12px 0; }
-
-  .modes { display: flex; gap: 8px; flex-wrap: wrap; }
-  .modes button, .small { font: inherit; font-size: 17px; padding: 10px 18px; border-radius: 999px;
-    border: 2px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
-  .modes .stop { border-color: #e2b8a8; color: #8a3b22; }
-  .modes button[aria-pressed="true"] { border-color: var(--accent); background: #e8f3ef; font-weight: 700; }
-
-  .stage { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; margin-top: 16px; }
-  .bubble { min-height: 96px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-  .big { font-size: 44px; font-weight: 800; line-height: 1.1; }
-  .say { font-size: 22px; color: var(--muted); margin-top: 6px; }
-  .yes { color: var(--yes); animation: pop .5s ease-out; }
-  .soft { color: var(--soft); }
-  @keyframes pop { 0% { transform: scale(.6); opacity: 0 } 60% { transform: scale(1.15); opacity: 1 } 100% { transform: scale(1) } }
-  .stars { font-size: 34px; height: 40px; }
-
-  .meter { height: 10px; background: #efe9de; border-radius: 99px; overflow: hidden; margin: 10px auto 4px; max-width: 360px; }
-  .meter > div { height: 100%; width: 0; background: var(--accent); transition: width .08s linear; }
-  .meter-label { text-align: center; font-size: 13px; color: var(--muted); }
-
-  svg.piano { width: 100%; height: auto; display: block; margin-top: 14px; touch-action: manipulation; }
-  .wk { fill: #fff; stroke: #3a3640; stroke-width: 2; }
-  .bk { fill: #2c2a33; stroke: #2c2a33; stroke-width: 2; }
-  .key.target.wk { fill: var(--target); }
-  .key.target.bk { fill: #3f9a80; }
-  .key.heard.wk { fill: var(--heard); }
-  .key.heard.bk { fill: #d08a10; }
-  .key.target.heard.wk, .key.target.heard.bk { fill: var(--yes); }
-  .lbl { font-size: 22px; font-weight: 700; fill: #8b8494; text-anchor: middle; pointer-events: none; }
-  .lbl.mid { fill: var(--accent); }
-  .midc { font-size: 13px; fill: var(--accent); text-anchor: middle; pointer-events: none; }
-
-  details.debug { margin-top: 18px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 16px; -webkit-user-select: text; user-select: text; }
-  details.debug summary { font-weight: 700; cursor: pointer; font-size: 16px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
-  .cell { background: #f7f3ec; border-radius: 10px; padding: 8px 10px; }
-  .cell b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
-  .cell span { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
-  .ctrl { display: grid; grid-template-columns: 170px 1fr 60px; align-items: center; gap: 10px; margin-top: 10px; font-size: 14px; }
-  .ctrl input { width: 100%; }
-  .log { font-family: ui-monospace, Menlo, monospace; font-size: 13px; margin-top: 10px; white-space: pre-wrap; color: var(--muted); max-height: 180px; overflow: auto; }
-  .tips { font-size: 14px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
-  @media (max-width: 600px) { .big { font-size: 34px; } .ctrl { grid-template-columns: 1fr; } }
-</style>
-</head>
-<body>
-<main>
-  <header>
-    <div>
-      <h1>🎹 Piano Listener</h1>
-      <p class="sub">Play one key at a time. The screen lights up the key it hears.</p>
-    </div>
-    <div class="modes hidden" id="modes">
-      <button id="mode-free" aria-pressed="true">Just play</button>
-      <button id="mode-target" aria-pressed="false">Find the key</button>
-      <button id="stop" class="stop">■ Stop listening</button>
-    </div>
-  </header>
-
-  <button class="start" id="start">▶ Start listening</button>
-  <div class="err hidden" id="err"></div>
-
-  <section class="stage hidden" id="stage">
-    <div class="bubble" id="bubble">
-      <div class="big" id="bigText">Play a key!</div>
-      <div class="say" id="sayText">I'm listening.</div>
-    </div>
-    <div class="stars" id="stars" aria-live="polite"></div>
-    <div class="meter"><div id="meterBar"></div></div>
-    <div class="meter-label" id="meterLabel">sound level</div>
-    <svg class="piano" id="piano" viewBox="0 0 902 312" role="img" aria-label="Piano keys from C3 to C5"></svg>
-    <div id="targetCtrls" class="hidden" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; justify-content:center">
-      <label for="pool" style="font-size:15px; color:var(--muted)">Practice keys:</label>
-      <select id="pool" class="small">
-        <option value="five">C D E F G (middle C hand)</option>
-        <option value="white">All white keys</option>
-        <option value="all">All keys</option>
-      </select>
-      <button class="small" id="skip">New key</button>
-      <span style="font-size:14px; color:var(--muted)">Tip: tap a key on screen to pick it.</span>
-    </div>
-  </section>
-
-  <details class="debug hidden" id="debug" open>
-    <summary>Grown-up corner: accuracy readout</summary>
-    <div class="grid">
-      <div class="cell"><span>Frequency</span><b id="dFreq">–</b></div>
-      <div class="cell"><span>Raw note</span><b id="dNote">–</b></div>
-      <div class="cell"><span>Cents off</span><b id="dCents">–</b></div>
-      <div class="cell"><span>Confidence</span><b id="dClar">–</b></div>
-      <div class="cell"><span>Steady note</span><b id="dStable">–</b></div>
-      <div class="cell"><span>Level (RMS)</span><b id="dRms">–</b></div>
-      <div class="cell"><span>Pitch wobble</span><b id="dSpread">–</b></div>
-      <div class="cell"><span>Ignored (not piano)</span><b id="dIgnored">0</b></div>
-    </div>
-    <div class="ctrl"><label for="pianoOnly">Piano only (ignore voices)</label><input type="checkbox" id="pianoOnly" checked style="width:auto; justify-self:start; transform:scale(1.4)"><span id="vPiano">on</span></div>
-    <div class="ctrl"><label for="sSpread">Pitch wobble allowed</label><input type="range" id="sSpread" min="5" max="60" step="1" value="18"><span id="vSpread"></span></div>
-    <div class="ctrl"><label for="sGate">Quiet-sound gate</label><input type="range" id="sGate" min="0.002" max="0.08" step="0.001" value="0.012"><span id="vGate"></span></div>
-    <div class="ctrl"><label for="sClar">Confidence needed</label><input type="range" id="sClar" min="0.5" max="0.98" step="0.01" value="0.85"><span id="vClar"></span></div>
-    <div class="ctrl"><label for="sStable">Steady frames</label><input type="range" id="sStable" min="1" max="12" step="1" value="4"><span id="vStable"></span></div>
-    <div class="log" id="log"></div>
-    <p class="tips" id="envInfo"></p>
-    <p class="tips">How to judge it: play each key from C3 up to C5 slowly, one at a time. "Raw note" should match the key right away, and "Steady note" should settle within a moment and not flicker. If it misses soft notes, lower the gate. If it lights keys when nobody is playing, raise the gate. If it jumps between notes, raise "Confidence needed" or "Steady frames". "Piano only" ignores sounds that don't start with a key strike or whose pitch wobbles, like talking. If it ignores real piano notes, raise "Pitch wobble allowed". If voices still get through, lower it.</p>
-  </details>
-</main>
-
-<script src="pitch.js"></script>
-<script src="app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#fbf7f0" />
+    <title>Piano Play</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>

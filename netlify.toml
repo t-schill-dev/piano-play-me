@@ -1,6 +1,9 @@
-# Plain static site: no build step, publish the repo root.
 [build]
-  publish = "."
+  command = "npm run build"
+  publish = "dist"
   # Only deploy the production branch (main). Netlify skips a deploy when this
   # command exits 0, so pull requests and other branches are never deployed.
   ignore = "if [ \"$CONTEXT\" = \"production\" ]; then exit 1; else exit 0; fi"
+
+[build.environment]
+  NODE_VERSION = "22"
