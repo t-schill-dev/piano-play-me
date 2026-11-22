@@ -47,7 +47,7 @@
   drawPiano();
 
   // ---------- Settings ----------
-  const settings = { gate: 0.012, clarity: 0.85, stable: 4 };
+  const settings = { gate: 0.012, clarity: 0.85, stable: 4, spread: 18, pianoOnly: true };
   function bindSlider(id, valId, key, fmt) {
     const el = $(id), out = $(valId);
     const sync = () => { settings[key] = Number(el.value); out.textContent = fmt(settings[key]); };
@@ -56,6 +56,10 @@
   bindSlider('sGate', 'vGate', 'gate', (v) => v.toFixed(3));
   bindSlider('sClar', 'vClar', 'clarity', (v) => Math.round(v * 100) + '%');
   bindSlider('sStable', 'vStable', 'stable', (v) => String(v));
+  bindSlider('sSpread', 'vSpread', 'spread', (v) => v + '¢');
+  $('pianoOnly').addEventListener('change', (e) => {
+    settings.pianoOnly = e.target.checked; $('vPiano').textContent = e.target.checked ? 'on' : 'off';
+  });
 
   // ---------- Modes ----------
   let mode = 'free', target = null, celebrating = false, stars = 0;
@@ -97,8 +101,24 @@
   }
 
   // ---------- Audio ----------
-  let ctx, analyser, buf, running = false;
+  let ctx, analyser, buf, stream, running = false, listenersAdded = false;
   $('start').addEventListener('click', start);
+  $('stop').addEventListener('click', stop);
+
+  function stop() {
+    running = false;
+    try { if (stream) stream.getTracks().forEach((t) => t.stop()); } catch (_) {}
+    try { if (ctx) ctx.close(); } catch (_) {}
+    stream = null; ctx = null;
+    try { if (wakeLock) wakeLock.release(); } catch (_) {}
+    candMidi = null; candFrames = []; stableMidi = null; evaluated = true; onsetPending = false;
+    if (shown != null && keyEls[shown]) keyEls[shown].classList.remove('heard');
+    shown = null;
+    $('meterBar').style.width = '0%';
+    say('Taking a break', 'The microphone is off. Tap Start when you want to play again.');
+    $('stop').classList.add('hidden');
+    $('start').classList.remove('hidden');
+  }
 
   async function start() {
     const err = $('err'); err.classList.add('hidden');
@@ -109,7 +129,7 @@
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error('This browser cannot use the microphone here. The page must be opened over https.');
       }
-      const stream = await navigator.mediaDevices.getUserMedia({
+      stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
       });
       const src = ctx.createMediaStreamSource(stream);
@@ -118,16 +138,22 @@
       analyser.smoothingTimeConstant = 0;
       src.connect(analyser);                // not connected to speakers: no feedback
       buf = new Float32Array(analyser.fftSize);
-      running = true;
+      running = true; const myGen = ++loopGen;
       $('start').classList.add('hidden');
-      ['stage', 'modes', 'debug'].forEach((id) => $(id).classList.remove('hidden'));
+      ['stage', 'modes', 'debug', 'stop'].forEach((id) => $(id).classList.remove('hidden'));
+      if (mode === 'target' && target != null) say('Find ' + P.midiLetter(target) + '!', 'Play the glowing key when you are ready.');
+      else say('Play a key!', "I'm listening.");
       $('envInfo').textContent = 'Sample rate: ' + ctx.sampleRate + ' Hz · window: ' + analyser.fftSize + ' samples · ' + navigator.userAgent;
       keepAwake();
-      document.addEventListener('visibilitychange', () => {
-        if (!document.hidden && ctx.state !== 'running') ctx.resume();
-        if (!document.hidden) keepAwake();
-      });
-      requestAnimationFrame(loop);
+      if (!listenersAdded) {
+        listenersAdded = true;
+        document.addEventListener('visibilitychange', () => {
+          if (!running || document.hidden) return;
+          if (ctx && ctx.state !== 'running') ctx.resume();
+          keepAwake();
+        });
+      }
+      requestAnimationFrame((t) => loop(t, myGen));
     } catch (e) {
       err.textContent = 'Could not start the microphone: ' + (e && e.message ? e.message : e) +
         '. On iPad, tap "Allow" when Safari asks. If you said no before, tap "aA" in the address bar, then Website Settings, then Microphone, then Allow.';
@@ -141,13 +167,18 @@
   }
 
   // ---------- Stability / note tracking ----------
-  let candMidi = null, candCount = 0, stableMidi = null, lastHeardAt = 0;
+  let candMidi = null, candFrames = [], candStartAt = 0, stableMidi = null, lastHeardAt = 0, ignored = 0;
+  function markSpoiled() { spoiled = true; ignored++; $('dIgnored').textContent = ignored; }
+  const ONSET_WINDOW_MS = 400; // a piano note must settle within this long after a key strike
+  // Since the last key strike: loudest level so far, pitch range seen, and whether it stopped looking like a piano.
+  let onsetPeak = 0, onsetLo = Infinity, onsetHi = -Infinity, spoiled = false;
   let levelAvg = 0, evaluated = true, lastOnsetAt = 0, onsetPending = false;
   const HOLD_MS = 220;
   const logLines = [];
 
-  function loop(now) {
-    if (!running) return;
+  let loopGen = 0;
+  function loop(now, gen) {
+    if (!running || gen !== loopGen) return;
     if (analyser.getFloatTimeDomainData) analyser.getFloatTimeDomainData(buf);
     else { const b = new Uint8Array(buf.length); analyser.getByteTimeDomainData(b); for (let i = 0; i < b.length; i++) buf[i] = (b[i] - 128) / 128; }
 
@@ -155,36 +186,70 @@
 
     // Onset: a sudden jump in loudness means a new key press (even the same key again).
     if (r.rms > settings.gate * 1.5 && r.rms > levelAvg * 1.8 && now - lastOnsetAt > 120) {
-      lastOnsetAt = now; onsetPending = true; candCount = 0;
+      lastOnsetAt = now; onsetPending = true; candFrames = []; candMidi = null;
+      onsetPeak = r.rms; onsetLo = Infinity; onsetHi = -Infinity; spoiled = false;
     }
     levelAvg = levelAvg * 0.85 + r.rms * 0.15;
 
-    let rawMidi = null;
+    let rawMidi = null, mf = 0, spread = null;
     if (r.freq > 0 && r.clarity >= settings.clarity) {
-      const mf = P.freqToMidi(r.freq);
+      mf = P.freqToMidi(r.freq);
       rawMidi = Math.round(mf);
       if (rawMidi < DETECT_LOW || rawMidi > DETECT_HIGH) rawMidi = null;
     }
 
+    // Piano check, measured from the key strike: a piano is loudest right at the strike and
+    // its pitch barely moves. Voices swell in more slowly and slide or wobble in pitch.
+    const sinceOnset = now - lastOnsetAt;
+    if (settings.pianoOnly && lastOnsetAt > 0 && !spoiled && sinceOnset <= ONSET_WINDOW_MS) {
+      if (r.rms > onsetPeak) {
+        if (sinceOnset > 70 && r.rms > onsetPeak * 1.15) markSpoiled();
+        onsetPeak = r.rms;
+      }
+      if (rawMidi != null && sinceOnset > 25) {
+        const ref = candMidi != null ? candMidi : rawMidi;
+        if (Math.abs(mf - ref) < 11) { // skip one-frame octave slips, common in piano attacks
+          onsetLo = Math.min(onsetLo, mf); onsetHi = Math.max(onsetHi, mf);
+          if ((onsetHi - onsetLo) * 100 > settings.spread) markSpoiled();
+        }
+      }
+    }
+
     if (rawMidi != null) {
-      if (rawMidi === candMidi) candCount++; else { candMidi = rawMidi; candCount = 1; }
-      if (candCount >= settings.stable) {
-        if (stableMidi !== rawMidi) { stableMidi = rawMidi; evaluated = false; onsetPending = false; logNote(rawMidi, r); }
-        else if (onsetPending) { evaluated = false; onsetPending = false; logNote(rawMidi, r); }
-        lastHeardAt = now;
+      if (rawMidi === candMidi) candFrames.push(mf);
+      else { candMidi = rawMidi; candFrames = [mf]; candStartAt = now; }
+      if (candFrames.length > 40) candFrames.shift();
+      // Piano-only needs a slightly longer look (about 100 ms) to judge the wobble.
+      const need = settings.pianoOnly ? Math.max(settings.stable, 6) : settings.stable;
+      if (candFrames.length >= need) {
+        const win = candFrames.slice(-need);
+        spread = (Math.max.apply(null, win) - Math.min.apply(null, win)) * 100;
+        let accept = true;
+        if (settings.pianoOnly && stableMidi !== rawMidi) {
+          // Piano: struck (sharp onset) and rock-steady pitch. Speech: soft starts, sliding pitch.
+          const struck = lastOnsetAt > 0 && candStartAt >= lastOnsetAt - 30 && candStartAt - lastOnsetAt <= ONSET_WINDOW_MS;
+          // Wait ~130 ms after the strike so a singing wobble has time to show itself.
+          accept = struck && now - lastOnsetAt >= 130 && !spoiled && spread <= settings.spread;
+        }
+        if (accept) {
+          if (stableMidi !== rawMidi) { stableMidi = rawMidi; evaluated = false; onsetPending = false; logNote(rawMidi, r); }
+          else if (onsetPending) { evaluated = false; onsetPending = false; logNote(rawMidi, r); }
+          lastHeardAt = now;
+        }
       }
     } else {
-      candCount = 0;
+      candFrames = []; candMidi = null;
       if (stableMidi != null && now - lastHeardAt > HOLD_MS) { stableMidi = null; evaluated = true; }
     }
 
-    render(r, rawMidi);
+    render(r, rawMidi, spread);
     if (mode === 'target' && target != null && stableMidi != null && !evaluated && !celebrating) judge(stableMidi);
-    requestAnimationFrame(loop);
+    requestAnimationFrame((t) => loop(t, gen));
   }
 
   let shown = null;
-  function render(r, rawMidi) {
+  function render(r, rawMidi, spread) {
+    $('dSpread').textContent = spread == null ? '–' : Math.round(spread) + '¢';
     if (shown !== stableMidi) {
       if (shown != null && keyEls[shown]) keyEls[shown].classList.remove('heard');
       if (stableMidi != null && keyEls[stableMidi]) keyEls[stableMidi].classList.add('heard');
