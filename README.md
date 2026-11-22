@@ -1,36 +1,37 @@
-# piano-play-me
-App to learn playing simple songs on the piano with visual guidance
+# Piano Play
 
+A web app that helps a child learn simple songs on a real acoustic piano. The iPad listens through its microphone, so there's no MIDI and nothing to install. Built with Svelte 5, Vite and TypeScript. It has no backend, and progress is saved on the device.
 
-# Piano Listener (prototype)
+## Modes
+- **Discover**: "Just play" lights up whatever key you play. "Find the key" makes one key glow and cheers when you find it.
+- **Play a Song**: pick one of 8 public-domain songs. Coloured note bubbles show the tune, the next key glows, and the app waits for the right note. "Listen first" plays the tune (the mic ignores it while it plays).
+- **Adventure**: Pip the piano mouse helps friends who need songs. Each place has 4–5 lessons. You meet the notes, learn the song in parts (each part played twice), then play the whole song. Lessons earn 1–3 stars and unlock one after another. Finishing a place opens the next one and adds a 🏅 to that song.
 
-Plain HTML/JS, no build step, no backend. Files: `index.html`, `app.js`, `pitch.js`.
+Feedback is always gentle. Wrong notes get a kind nudge, the right letter in another octave counts, and finishing a lesson always earns at least one star.
 
-## Put it online (Cloudflare Pages, about 3 minutes)
-Safari only allows the microphone on an `https://` page, so it needs to be hosted.
+## Develop
+```bash
+npm install
+npm run dev      # local dev server
+npm run check    # type check
+npm run build    # production build into dist/
+```
+The microphone only works on `https://` or `localhost`.
 
-1. Download this `piano-mic` folder to your Mac.
-2. Go to dash.cloudflare.com → Workers & Pages → Create → Pages → "Upload assets".
-3. Name the project (for example `piano-listener`), then drag the `piano-mic` folder in and click Deploy.
-4. Open the `https://piano-listener.pages.dev` link on the iPad in Safari. Tip: Share → Add to Home Screen.
+## Code map
+- `src/lib/pitch.ts`: pitch detection (McLeod pitch method), note names and colours.
+- `src/lib/listener.svelte.ts`: microphone → steady notes. It includes the "piano only" filter: a note counts only if it starts with a sharp strike, is loudest at the start, and has a steady pitch, so talking and singing are ignored.
+- `src/lib/songs.ts`: the song library, the Adventure stories, the lesson builder and the star rules.
+- `src/lib/progress.svelte.ts`: Adventure progress, saved in localStorage.
+- `src/lib/synth.ts`: the small synth behind "Listen first".
+- `src/components/NoteRunner.svelte`: the play-along engine shared by songs and lessons.
+- `src/pages/*`: Home, Discover, the song list and player, the Adventure map, a place's lessons, and a single lesson.
 
-To update later: same project → Create deployment → drag the folder again.
+## Adding a song
+Add an entry to `SONGS` in `src/lib/songs.ts`. Notes are letters (octave 4 by default, or `C5`, `G3`), with an optional `:beats` (default 1). Separate phrases with `|`. Lessons are generated from the phrases automatically.
 
-## What to test
-- Quiet room, iPad speaker volume down, iPad on the music stand.
-- Tap **Start listening**, then **Allow** the microphone.
-- "Just play": play each key from low C to high C slowly, one key at a time. Watch whether the right key lights up and stays steady.
-- Try soft and loud presses, and the same key twice in a row.
-- "Find the key": the glowing key is the target. A right note shows "Yes!" and a star; a wrong one gets a kind nudge.
-- Grown-up corner: Raw note should match right away; Steady note should not flicker. Adjust the three sliders if needed and note which settings work best.
-
-## How it works
-- Pitch: McLeod Pitch Method (normalized autocorrelation) on 2048-sample frames, ~60 times a second.
-- Steadiness: a note must repeat for N frames (default 4, about 65 ms) and pass a confidence threshold (default 85%) before the key lights.
-- New key presses are detected from a jump in loudness, so playing the same key twice counts twice.
-- Right letter in a different octave counts as correct in "Find the key", with a note saying so.
-- **Stop listening** turns the microphone off (the iPad's mic indicator goes away). Tap Start to listen again.
-- **Piano only** (on by default, in the grown-up corner): a note only counts if it starts with a sharp key strike, is loudest right at the start, and its pitch stays steady for the first ~130 ms. Talking and singing slide or wobble in pitch, so they are ignored. Someone humming one perfectly steady note can still get through. If real piano notes are being ignored, raise "Pitch wobble allowed".
+## Grown-up corner
+At the bottom of every screen you'll find a live accuracy readout (frequency, note, cents, confidence) and sliders for sensitivity. It also has buttons to open all Adventure places or reset progress.
 
 ## Deploys
-`netlify.toml` publishes the repo root and only deploys `main`; pull requests and other branches are skipped.
+`netlify.toml` builds with `npm run build` and publishes `dist/`. It deploys `main` only, so pull requests and other branches are skipped.
