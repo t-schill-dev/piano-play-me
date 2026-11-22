@@ -29,3 +29,8 @@ To update later: same project → Create deployment → drag the folder again.
 - Steadiness: a note must repeat for N frames (default 4, about 65 ms) and pass a confidence threshold (default 85%) before the key lights.
 - New key presses are detected from a jump in loudness, so playing the same key twice counts twice.
 - Right letter in a different octave counts as correct in "Find the key", with a note saying so.
+- **Stop listening** turns the microphone off (the iPad's mic indicator goes away). Tap Start to listen again.
+- **Piano only** (on by default, in the grown-up corner): a note only counts if it starts with a sharp key strike, is loudest right at the start, and its pitch stays steady for the first ~130 ms. Talking and singing slide or wobble in pitch, so they are ignored. Someone humming one perfectly steady note can still get through. If real piano notes are being ignored, raise "Pitch wobble allowed".
+
+## Deploys
+`netlify.toml` publishes the repo root and only deploys `main`; pull requests and other branches are skipped.

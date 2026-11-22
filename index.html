@@ -30,6 +30,7 @@
   .modes { display: flex; gap: 8px; flex-wrap: wrap; }
   .modes button, .small { font: inherit; font-size: 17px; padding: 10px 18px; border-radius: 999px;
     border: 2px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
+  .modes .stop { border-color: #e2b8a8; color: #8a3b22; }
   .modes button[aria-pressed="true"] { border-color: var(--accent); background: #e8f3ef; font-weight: 700; }
 
   .stage { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 18px; margin-top: 16px; }
@@ -80,6 +81,7 @@
     <div class="modes hidden" id="modes">
       <button id="mode-free" aria-pressed="true">Just play</button>
       <button id="mode-target" aria-pressed="false">Find the key</button>
+      <button id="stop" class="stop">■ Stop listening</button>
     </div>
   </header>
 
@@ -116,13 +118,17 @@
       <div class="cell"><span>Confidence</span><b id="dClar">–</b></div>
       <div class="cell"><span>Steady note</span><b id="dStable">–</b></div>
       <div class="cell"><span>Level (RMS)</span><b id="dRms">–</b></div>
+      <div class="cell"><span>Pitch wobble</span><b id="dSpread">–</b></div>
+      <div class="cell"><span>Ignored (not piano)</span><b id="dIgnored">0</b></div>
     </div>
+    <div class="ctrl"><label for="pianoOnly">Piano only (ignore voices)</label><input type="checkbox" id="pianoOnly" checked style="width:auto; justify-self:start; transform:scale(1.4)"><span id="vPiano">on</span></div>
+    <div class="ctrl"><label for="sSpread">Pitch wobble allowed</label><input type="range" id="sSpread" min="5" max="60" step="1" value="18"><span id="vSpread"></span></div>
     <div class="ctrl"><label for="sGate">Quiet-sound gate</label><input type="range" id="sGate" min="0.002" max="0.08" step="0.001" value="0.012"><span id="vGate"></span></div>
     <div class="ctrl"><label for="sClar">Confidence needed</label><input type="range" id="sClar" min="0.5" max="0.98" step="0.01" value="0.85"><span id="vClar"></span></div>
     <div class="ctrl"><label for="sStable">Steady frames</label><input type="range" id="sStable" min="1" max="12" step="1" value="4"><span id="vStable"></span></div>
     <div class="log" id="log"></div>
     <p class="tips" id="envInfo"></p>
-    <p class="tips">How to judge it: play each key from C3 up to C5 slowly, one at a time. "Raw note" should match the key right away, and "Steady note" should settle within a moment and not flicker. If it misses soft notes, lower the gate. If it lights keys when nobody is playing, raise the gate. If it jumps between notes, raise "Confidence needed" or "Steady frames".</p>
+    <p class="tips">How to judge it: play each key from C3 up to C5 slowly, one at a time. "Raw note" should match the key right away, and "Steady note" should settle within a moment and not flicker. If it misses soft notes, lower the gate. If it lights keys when nobody is playing, raise the gate. If it jumps between notes, raise "Confidence needed" or "Steady frames". "Piano only" ignores sounds that don't start with a key strike or whose pitch wobbles, like talking. If it ignores real piano notes, raise "Pitch wobble allowed". If voices still get through, lower it.</p>
   </details>
 </main>
 
