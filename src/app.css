@@ -174,3 +174,25 @@ h2 { font-size: 24px; margin: 14px 0 6px; }
   .tile .ico { font-size: 48px; }
   .hello { margin: 8px 0 4px; }
 }
+
+/* Who's playing? (players work like profiles; Guest is always there) */
+.who { margin: auto 0; padding-bottom: 20px; }
+.players { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 180px)); justify-content: center; gap: 18px; margin-top: 18px; }
+.player { background: none; border: 0; padding: 6px; text-align: center; }
+.player .face { display: grid; place-items: center; width: 132px; height: 132px; margin: 0 auto; border-radius: 32px; font-size: 76px; line-height: 1;
+  border: 3px solid transparent; box-shadow: 0 5px 0 var(--line); }
+.player:active .face { transform: translateY(3px); box-shadow: 0 2px 0 var(--line); }
+.player b { display: block; font-size: 22px; margin-top: 10px; }
+.player small { display: block; color: var(--muted); font-size: 14px; }
+.player.add .face { background: var(--card); border: 3px dashed var(--line); color: var(--muted); font-size: 56px; box-shadow: none; }
+.pill.me { display: inline-flex; align-items: center; font-weight: 700; padding: 6px 14px 6px 6px; }
+.mini { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; font-size: 20px; margin-right: 8px; }
+.mini.big { width: 44px; height: 44px; font-size: 26px; }
+.player-form { display: grid; gap: 12px; justify-items: center; }
+.player-form input { min-width: 240px; text-align: center; font-size: 20px; }
+.avatar-pick { display: grid; grid-template-columns: repeat(7, 52px); gap: 8px; justify-content: center; }
+.av { width: 52px; height: 52px; border-radius: 14px; border: 2px solid var(--line); background: var(--card); font-size: 30px; line-height: 1; padding: 0; }
+.av.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 3px var(--accent-soft); }
+.plist { display: grid; gap: 8px; margin-top: 10px; }
+@media (max-height: 820px) { .player .face { width: 112px; height: 112px; font-size: 64px; } .players { margin-top: 10px; } }
+@media (max-width: 600px) { .avatar-pick { grid-template-columns: repeat(5, 52px); } }

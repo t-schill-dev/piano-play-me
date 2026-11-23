@@ -1,6 +1,7 @@
 <script lang="ts">
   import { listener } from '../lib/listener.svelte';
   import { router } from '../lib/router.svelte';
+  import { family } from '../lib/family.svelte';
 
   function go(path: string): void {
     listener.start(); // starts inside the tap, as Safari requires
@@ -9,7 +10,7 @@
 </script>
 
 <div class="hello">
-  <div class="big">Hi! What do you want to do today?</div>
+  <div class="big">Hi{family.current && family.current.id !== 'guest' ? ' ' + family.current.name : ''}! What do you want to do today?</div>
   <p>Tap a picture. The iPad will listen to your piano.</p>
 </div>
 <div class="tiles">

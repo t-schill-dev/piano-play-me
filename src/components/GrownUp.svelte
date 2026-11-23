@@ -1,36 +1,56 @@
 <script lang="ts">
   import { listener } from '../lib/listener.svelte';
   import { progress } from '../lib/progress.svelte';
+  import { family, avatarColor } from '../lib/family.svelte';
+  import PlayerForm from './PlayerForm.svelte';
   import { freqToMidi, midiName } from '../lib/pitch';
 
   const f = $derived(listener.frame);
   const mf = $derived(f && f.r.freq ? freqToMidi(f.r.freq) : null);
   const s = listener.settings;
   let confirmReset = $state(false);
-  let codeInput = $state('');
+  let editing = $state<string | null>(null);
+  let removing = $state<string | null>(null);
   const STATUS: Record<string, string> = {
-    none: 'Not saving yet. Stars disappear when the page is closed.',
+    none: 'Not saved (Guest).',
     loading: 'Loading stars…', saving: 'Saving…', saved: 'Saved online ✓',
     offline: 'Offline. Stars will be saved when the internet is back.', error: 'Could not save.',
   };
 </script>
 
 <section class="debug">
-  <h3 style="margin:0 0 6px">Save stars online</h3>
-  {#if progress.code}
-    <p class="muted" style="margin:0">Family code <b>{progress.code}</b> · {STATUS[progress.status]}</p>
-    {#if progress.problem && progress.status === 'error'}<p class="err">{progress.problem}</p>{/if}
+  <h3 style="margin:0 0 6px">Family login and players</h3>
+  {#if family.code}
+    <p class="muted" style="margin:0">Logged in with family code <b>{family.code}</b>.
+      {#if progress.saving}Stars for {family.current?.name}: {STATUS[progress.status]}{/if}</p>
+    {#if progress.status === 'error' && progress.problem}<p class="err">{progress.problem}</p>{/if}
+    {#if family.problem}<p class="err">{family.problem}</p>{/if}
+    <div class="plist">
+      {#each family.players as p (p.id)}
+        {#if editing === p.id}
+          <PlayerForm name={p.name} avatar={p.avatar} onsave={async (n, a) => { if (await family.updatePlayer(p.id, n, a)) editing = null; }} oncancel={() => (editing = null)} />
+        {:else}
+          <div class="row">
+            <span class="mini big" style="background: {avatarColor(p)}">{p.avatar}</span><b style="min-width:120px">{p.name}</b>
+            <button class="pill" onclick={() => { editing = p.id; removing = null; }}>Change</button>
+            {#if removing === p.id}
+              <button class="pill stop" onclick={() => { void family.removePlayer(p.id); removing = null; }}>Yes, remove {p.name} and their stars</button>
+              <button class="pill" onclick={() => (removing = null)}>Keep</button>
+            {:else}
+              <button class="pill" onclick={() => { removing = p.id; editing = null; }}>Remove</button>
+            {/if}
+          </div>
+        {/if}
+      {/each}
+      {#if !family.players.length}<p class="muted" style="margin:0">No players yet. Add one on the "Who's playing?" screen.</p>{/if}
+    </div>
     <div class="row" style="margin-top:8px">
-      <button class="pill" onclick={() => progress.disconnect()}>Use a different code on this device</button>
+      <button class="pill" onclick={() => { family.choose(null); }}>Switch player</button>
+      <button class="pill" onclick={() => family.disconnect()}>Log out on this device</button>
     </div>
   {:else}
-    <p class="muted" style="margin:0">Pick a family code (at least 6 letters or numbers) and type the same code on every device.
-      Stars are then saved online and shared between them. Keep it private, like a password.</p>
-    <form class="row" style="margin-top:8px" onsubmit={(e) => { e.preventDefault(); void progress.connect(codeInput); }}>
-      <input class="pill" style="min-width:220px" bind:value={codeInput} placeholder="Family code" autocomplete="off" autocapitalize="off" spellcheck="false" />
-      <button class="pill go" type="submit">Save stars online</button>
-    </form>
-    {#if progress.problem}<p class="err">{progress.problem}</p>{/if}
+    <p class="muted" style="margin:0">Not logged in, so only Guest can play and stars are not saved.
+      Use "Family login" on the "Who's playing?" screen to add players.</p>
   {/if}
   <h3 style="margin:18px 0 0">Listening</h3>
   <p class="muted" style="margin:0">Live accuracy readout and listening settings.</p>
@@ -52,10 +72,10 @@
   <div class="row" style="margin-top:12px">
     <button class="pill" onclick={() => progress.openAll()} disabled={progress.data.openAll}>{progress.data.openAll ? 'All Adventure places are open' : 'Open all Adventure places'}</button>
     {#if confirmReset}
-      <button class="pill stop" onclick={() => { progress.reset(); confirmReset = false; }}>Yes, erase all stars</button>
+      <button class="pill stop" onclick={() => { progress.reset(); confirmReset = false; }}>Yes, erase this player's stars</button>
       <button class="pill" onclick={() => (confirmReset = false)}>Keep them</button>
     {:else}
-      <button class="pill" onclick={() => (confirmReset = true)}>Reset Adventure progress</button>
+      <button class="pill" onclick={() => (confirmReset = true)}>Reset this player's stars</button>
     {/if}
   </div>
   <div class="log">{listener.log.length ? 'Steady notes heard (newest first):\n' + listener.log.join('\n') : ''}</div>

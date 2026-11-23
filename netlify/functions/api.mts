@@ -6,4 +6,4 @@ import { handle } from '../lib/api-core.mts';
 export default async (req: Request): Promise<Response> =>
   handle(req, getStore({ name: 'piano-play', consistency: 'strong' }), process.env.SONGS_ADMIN_KEY);
 
-export const config: Config = { path: ['/api/songs', '/api/progress'] };
+export const config: Config = { path: ['/api/songs', '/api/family', '/api/progress'] };

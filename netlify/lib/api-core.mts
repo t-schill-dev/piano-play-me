@@ -5,10 +5,14 @@
  *   GET  /api/songs     -> { songs: Song[] }   the stored list; songs built into the app that the
  *                          store doesn't have yet (the first time: all of them) are added and saved
  *   PUT  /api/songs     -> replace the song list       (header x-admin-key = SONGS_ADMIN_KEY)
- *   GET  /api/progress  -> { stars, openAll }          (header x-family-code)
- *   POST /api/progress  -> merge and return progress   (header x-family-code; body { stars, openAll, replace? })
+ *   GET  /api/family               -> { players }   (header x-family-code)
+ *   PUT  /api/family               -> save the players list { players: [{ id, name, avatar }] }
+ *   GET  /api/progress?player=<id> -> { stars, openAll }
+ *   POST /api/progress?player=<id> -> merge and return progress (body { stars, openAll, replace? })
  *
- * Progress is stored under a SHA-256 hash of the family code, so the code itself is never stored.
+ * The family code works like a login and players like profiles. A family's data is stored under
+ * a SHA-256 hash of its code, so the code itself is never stored. The Guest player lives only in
+ * the app and is never saved.
  */
 import { createHash } from 'node:crypto';
 import { parse, SONGS, type Song } from '../../src/lib/songs.ts';
@@ -16,6 +20,7 @@ import { parse, SONGS, type Song } from '../../src/lib/songs.ts';
 export interface Store {
   get(key: string, opts: { type: 'json' }): Promise<unknown>;
   setJSON(key: string, value: unknown): Promise<unknown>;
+  delete(key: string): Promise<unknown>;
 }
 
 export interface Progress { stars: Record<string, number[]>; openAll: boolean; }
@@ -24,8 +29,28 @@ const json = (body: unknown, status = 200): Response =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 
 const MIN_CODE = 6;
-const progressKey = (code: string): string =>
-  'progress/' + createHash('sha256').update(code.trim().toLowerCase()).digest('hex');
+const MAX_PLAYERS = 8;
+/** Everything for one family lives under a SHA-256 hash of its code. */
+const familyKey = (code: string): string =>
+  'family/' + createHash('sha256').update(code.trim().toLowerCase()).digest('hex');
+
+export interface Player { id: string; name: string; avatar: string; }
+
+/** null when the list is not acceptable; a cleaned copy otherwise. */
+function cleanPlayers(v: unknown): Player[] | null {
+  if (!Array.isArray(v) || v.length > MAX_PLAYERS) return null;
+  const out: Player[] = [];
+  for (const p of v) {
+    if (!p || typeof p !== 'object') return null;
+    const { id, name, avatar } = p as Record<string, unknown>;
+    if (typeof id !== 'string' || !/^[a-z0-9]{4,16}$/.test(id) || id === 'guest') return null;
+    if (typeof name !== 'string' || !name.trim() || name.trim().length > 20) return null;
+    if (typeof avatar !== 'string' || !avatar || avatar.length > 8) return null;
+    if (out.some((o) => o.id === id)) return null;
+    out.push({ id, name: name.trim(), avatar });
+  }
+  return out;
+}
 
 /** Keep only well-formed star lists: song id -> list of 0..3 per lesson. */
 function cleanProgress(v: unknown): Progress {
@@ -87,10 +112,29 @@ export async function handle(req: Request, store: Store, adminKey: string | unde
     return json({ error: 'Method not allowed' }, 405);
   }
 
-  if (path === '/api/progress') {
+  if (path === '/api/family' || path === '/api/progress') {
     const code = req.headers.get('x-family-code') ?? '';
     if (code.trim().length < MIN_CODE) return json({ error: `The family code needs at least ${MIN_CODE} characters` }, 400);
-    const key = progressKey(code);
+    const fam = familyKey(code);
+    const players = cleanPlayers(await store.get(fam + '/players', { type: 'json' })) ?? [];
+
+    if (path === '/api/family') {
+      if (req.method === 'GET') return json({ players });
+      if (req.method === 'PUT') {
+        const body = (await req.json().catch(() => null)) as { players?: unknown } | null;
+        const next = cleanPlayers(body?.players);
+        if (!next) return json({ error: `Up to ${MAX_PLAYERS} players, each with a name and an avatar` }, 400);
+        await store.setJSON(fam + '/players', next);
+        // A removed player's stars go with them.
+        for (const p of players) if (!next.some((n) => n.id === p.id)) await store.delete(fam + '/progress/' + p.id);
+        return json({ players: next });
+      }
+      return json({ error: 'Method not allowed' }, 405);
+    }
+
+    const player = new URL(req.url).searchParams.get('player') ?? '';
+    if (!players.some((p) => p.id === player)) return json({ error: 'Unknown player' }, 404);
+    const key = fam + '/progress/' + player;
     const saved = cleanProgress(await store.get(key, { type: 'json' }));
     if (req.method === 'GET') return json(saved);
     if (req.method === 'POST') {

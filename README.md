@@ -30,8 +30,10 @@ The microphone only works on `https://` or `localhost`.
 - `src/pages/*`: Home, Discover, the song list and player, the Adventure map, a place's lessons, and a single lesson.
 
 ## Saved data (Netlify Blobs)
-`netlify/functions/api.mts` serves `/api/songs` and `/api/progress` from the Blobs store `piano-play`. The logic is in `netlify/lib/api-core.mts`.
-- **Progress:** a grown-up types a family code (at least 6 characters) once per device under ⚙️. Every device with the same code shares the same stars. The server stores progress under a SHA-256 hash of the code and keeps the best stars when two devices save. The device only remembers the code. Without a code, stars last until the page closes. Progress saved on the device by older versions moves online the first time a code is entered.
+`netlify/functions/api.mts` serves `/api/songs`, `/api/family` and `/api/progress` from the Blobs store `piano-play`. The logic is in `netlify/lib/api-core.mts`.
+- **Family login and players:** the app opens on "Who's playing?". The family code (at least 6 characters) is the login, and a grown-up types it once per device. Inside a family, players work like profiles: each has a name and an animal avatar, and their own stars. Add players with the ＋ tile, and rename or remove them under ⚙️ (removing a player deletes their stars). Up to 8 players.
+- **Guest** is always on the picker, even without a login. Guest starts fresh and is never saved.
+- The server stores a family's players and stars under a SHA-256 hash of the code, and keeps the best stars when two devices save. The device only remembers the code. Stars that older versions kept on the device move to the first player created.
 - **Songs:** the first request copies the built-in songs into the store. After that the stored list is used, and any new built-in songs are added to it. To replace the list, set `SONGS_ADMIN_KEY` in Netlify's environment variables and send `PUT /api/songs` with header `x-admin-key` and body `{"songs": [...]}`. If the server can't be reached, the app uses the built-in songs.
 - **Offline:** stars earned offline are saved when the connection comes back.
 

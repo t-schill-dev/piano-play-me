@@ -9,6 +9,8 @@
   import Journey from './pages/Journey.svelte';
   import Lesson from './pages/Lesson.svelte';
   import GrownUp from './components/GrownUp.svelte';
+  import Who from './pages/Who.svelte';
+  import { family, avatarColor } from './lib/family.svelte';
 
   const r = $derived(router.route);
   const key = $derived(r.name + '/' + r.params.join('/'));
@@ -18,16 +20,21 @@
 <main>
   <header class="top">
     <div class="brand">
-      {#if r.name !== 'home'}
+      {#if r.name !== 'home' && family.current}
         <button class="pill" onclick={() => router.go('')} aria-label="Home">🏠 Home</button>
       {/if}
       <h1>🎹 Piano Play</h1>
     </div>
     <div class="row">
+      {#if family.current}
+        <button class="pill me" onclick={() => { family.choose(null); router.go(''); }} aria-label="Switch player">
+          <span class="mini" style="background: {avatarColor(family.current)}">{family.current.avatar}</span>{family.current.name}
+        </button>
+      {/if}
       <button class="pill gear" onclick={() => (grownUp = true)} aria-label="Grown-up corner">⚙️</button>
       {#if listener.running}
         <button class="pill stop" onclick={() => listener.stop()}>■ Stop listening</button>
-      {:else if r.name !== 'home'}
+      {:else if r.name !== 'home' && family.current}
         <button class="pill go" onclick={() => listener.start()} disabled={listener.starting}>🎤 Start listening</button>
       {/if}
     </div>
@@ -35,6 +42,9 @@
   {#if listener.error}<div class="err">{listener.error}</div>{/if}
 
   <div class="view">
+  {#if !family.current}
+    <Who />
+  {:else}
   {#key key}
     {#if r.name === 'discover'}<Discover />
     {:else if r.name === 'songs'}<SongList />
@@ -45,6 +55,7 @@
     {:else}<Home />
     {/if}
   {/key}
+  {/if}
   </div>
 </main>
 
