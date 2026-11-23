@@ -1,3 +1,5 @@
+import { songById, type Song } from './songs';
+
 /*
  * Song lists for "Play a Song": a level (easy / challenging / hard) and a language (English / German).
  * Each list holds up to six song ids from SONGS. Lists were agreed with the grown-up before use.
@@ -41,3 +43,15 @@ export const asLang = (v: string | undefined): Lang | undefined => (isLang(v) ? 
 let lastSongs = 'songs';
 export const lastSongsPath = (): string => lastSongs;
 export const rememberSongs = (path: string): void => { lastSongs = path; };
+
+/** The Adventure path for one language: its songs from Easy to Hard, without repeats. */
+export function adventureSongs(lang: Lang): Song[] {
+  const ids = [...LISTS.easy[lang], ...LISTS.challenging[lang], ...LISTS.hard[lang]];
+  const seen = new Set<string>();
+  const out: Song[] = [];
+  for (const id of ids) {
+    const s = songById(id);
+    if (s && !seen.has(id)) { seen.add(id); out.push(s); }
+  }
+  return out;
+}

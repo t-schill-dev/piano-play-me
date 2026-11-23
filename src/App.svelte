@@ -1,6 +1,6 @@
 <script lang="ts">
   import Logo from './components/Logo.svelte';
-  import { lastSongsPath } from './lib/lists';
+  import { lastSongsPath, asLang } from './lib/lists';
   import { listener } from './lib/listener.svelte';
   import { router } from './lib/router.svelte';
   import Home from './pages/Home.svelte';
@@ -24,8 +24,9 @@
       case 'home': return null;
       case 'songs': return p.length <= 1 ? '' : p.length === 2 ? 'songs/' + p[0] : '';
       case 'play': return lastSongsPath();
-      case 'journey': return 'adventure';
-      case 'lesson': return 'journey/' + p[0];
+      case 'adventure': return p.length ? 'adventure' : '';
+      case 'journey': return 'adventure/' + p[0];
+      case 'lesson': return 'journey/' + p[0] + '/' + p[1];
       default: return '';
     }
   });
@@ -67,8 +68,8 @@
     {:else if r.name === 'songs'}<SongList />
     {:else if r.name === 'play'}<PlaySong id={r.params[0]} />
     {:else if r.name === 'adventure'}<Adventure />
-    {:else if r.name === 'journey'}<Journey id={r.params[0]} />
-    {:else if r.name === 'lesson'}<Lesson id={r.params[0]} n={Number(r.params[1]) || 0} />
+    {:else if r.name === 'journey'}<Journey lang={asLang(r.params[0]) ?? 'en'} id={r.params[1]} />
+    {:else if r.name === 'lesson'}<Lesson lang={asLang(r.params[0]) ?? 'en'} id={r.params[1]} n={Number(r.params[2]) || 0} />
     {:else}<Home />
     {/if}
   {/key}

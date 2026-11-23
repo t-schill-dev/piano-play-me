@@ -40,7 +40,7 @@
         <button class="card" class:done={progress.songDone(s)}
           onclick={() => { rememberSongs('songs/' + levelInfo.id + '/' + langInfo.id); router.go('play/' + s.id); }}>
           <span class="ico">{s.emoji}</span>
-          <span><b>{s.title} {progress.songDone(s) ? '🏅' : ''}</b><small>{allNotes(s).length} notes</small></span>
+          <span><b>{(langInfo.id === 'en' && s.titleEn) || s.title} {progress.songDone(s) ? '🏅' : ''}</b><small>{allNotes(s).length} notes</small></span>
         </button>
       {/if}
     {/each}

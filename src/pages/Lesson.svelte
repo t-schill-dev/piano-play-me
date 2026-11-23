@@ -1,11 +1,13 @@
 <script lang="ts">
-  import { songById, lessonsFor, starsFor, SONGS } from '../lib/songs';
+  import { songById, lessonsFor, starsFor } from '../lib/songs';
+  import { adventureSongs, type Lang } from '../lib/lists';
   import { progress } from '../lib/progress.svelte';
   import { router } from '../lib/router.svelte';
   import NoteRunner from '../components/NoteRunner.svelte';
   import Pip from '../components/Pip.svelte';
 
-  let { id, n }: { id: string; n: number } = $props();
+  let { lang, id, n }: { lang: Lang; id: string; n: number } = $props();
+  const path = $derived(adventureSongs(lang));
   const song = $derived(songById(id));
   // Build once per visit (the "meet the notes" lesson shuffles).
   const lessons = $derived(song ? lessonsFor(song) : []);
@@ -26,11 +28,11 @@
     progress.record(song.id, n, earned);
   }
   function again(): void { earned = null; runKey++; }
-  const nextSong = $derived(SONGS[SONGS.findIndex((s) => s.id === id) + 1]);
+  const nextSong = $derived(path[path.findIndex((s) => s.id === id) + 1]);
 </script>
 
 {#if !song || !lesson || !progress.lessonUnlocked(id, n)}
-  <p>This lesson isn't open yet. <button class="pill" onclick={() => router.go('journey/' + id)}>Back</button></p>
+  <p>This lesson isn't open yet. <button class="pill" onclick={() => router.go('journey/' + lang + '/' + id)}>Back</button></p>
 {:else}
   <div class="stage fill">
     <h2 class="center">{song.emoji} Lesson {n + 1}: {lesson.title}</h2>
@@ -41,12 +43,12 @@
         <Pip>{isLast ? song.done : PRAISE[n % PRAISE.length]}</Pip>
         <div class="row center">
           {#if !isLast}
-            <button class="pill go" onclick={() => router.go(`lesson/${id}/${n + 1}`)}>Next lesson ▶</button>
+            <button class="pill go" onclick={() => router.go(`lesson/${lang}/${id}/${n + 1}`)}>Next lesson ▶</button>
           {:else if nextSong}
-            <button class="pill go" onclick={() => router.go('journey/' + nextSong.id)}>Go to {nextSong.place} ▶</button>
+            <button class="pill go" onclick={() => router.go('journey/' + lang + '/' + nextSong.id)}>Go to {nextSong.place} ▶</button>
           {/if}
           <button class="pill" onclick={again}>↺ Try again</button>
-          <button class="pill" onclick={() => router.go('journey/' + id)}>Back to {song.place}</button>
+          <button class="pill" onclick={() => router.go('journey/' + lang + '/' + id)}>Back to {song.place}</button>
         </div>
       </div>
     {:else}
