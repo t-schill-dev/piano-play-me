@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { songById, lessonsFor, starsFor } from '../lib/songs';
+  import { songById, lessonsFor, starsFor, titleIn } from '../lib/songs';
   import { adventureSongs, type Lang } from '../lib/lists';
   import { progress } from '../lib/progress.svelte';
   import { router } from '../lib/router.svelte';
@@ -38,7 +38,7 @@
     <h2 class="center">{song.emoji} Lesson {n + 1}: {lesson.title}</h2>
     {#if earned != null}
       <div class="finish">
-        <div class="big">{isLast ? 'You can play ' + song.title + '! 🏅' : 'Lesson done! 🎉'}</div>
+        <div class="big">{isLast ? 'You can play ' + titleIn(song, lang) + '! 🏅' : 'Lesson done! 🎉'}</div>
         <div class="stars">{'⭐'.repeat(earned)}</div>
         <Pip>{isLast ? song.done : PRAISE[n % PRAISE.length]}</Pip>
         <div class="row center">

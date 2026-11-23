@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { lessonCount, type Song } from '../lib/songs';
+  import { lessonCount, titleIn, type Song } from '../lib/songs';
   import { progress } from '../lib/progress.svelte';
   import { router } from '../lib/router.svelte';
   import { LANGS, asLang, adventureSongs } from '../lib/lists';
@@ -42,7 +42,7 @@
       <button class="step" class:locked={!open} class:next={i === nextIndex} disabled={!open}
         onclick={() => router.go('journey/' + lang + '/' + s.id)}>
         <span class="num">{open ? s.emoji : '🔒'}</span>
-        <span><b>{s.place}</b><small>{open ? (s.titleEn && lang === 'en' ? s.titleEn : s.title) : 'Finish the place before to open it'}</small></span>
+        <span><b>{s.place}</b><small>{titleIn(s, lang)}</small></span>
         <span class="st">{progress.songDone(s) ? '🏅 ' : ''}{earned ? '⭐ ' + earned : ''}</span>
       </button>
     {/each}

@@ -22,6 +22,11 @@ export interface Lesson {
 
 const LETTERS: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
+/** The song's title in the chosen language. English uses titleEn when there is one. */
+export function titleIn(song: Song, lang?: 'en' | 'de'): string {
+  return lang === 'en' && song.titleEn ? song.titleEn : song.title;
+}
+
 export function parse(text: string): Note[][] {
   return text.split('|').map((phrase) => phrase.trim().split(/\s+/).filter(Boolean).map((tok) => {
     const [name, beats] = tok.split(':');

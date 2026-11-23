@@ -66,7 +66,7 @@
   {#key key}
     {#if r.name === 'discover'}<Discover />
     {:else if r.name === 'songs'}<SongList />
-    {:else if r.name === 'play'}<PlaySong id={r.params[0]} />
+    {:else if r.name === 'play'}<PlaySong id={r.params[0]} lang={asLang(r.params[1])} />
     {:else if r.name === 'adventure'}<Adventure />
     {:else if r.name === 'journey'}<Journey lang={asLang(r.params[0]) ?? 'en'} id={r.params[1]} />
     {:else if r.name === 'lesson'}<Lesson lang={asLang(r.params[0]) ?? 'en'} id={r.params[1]} n={Number(r.params[2]) || 0} />
