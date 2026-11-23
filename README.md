@@ -1,6 +1,6 @@
 # Piano Play
 
-A web app that helps a child learn simple songs on a real acoustic piano. The iPad listens through its microphone, so there's no MIDI and nothing to install. Built with Svelte 5, Vite and TypeScript. It has no backend, and progress is saved on the device.
+A web app that helps a child learn simple songs on a real acoustic piano. The iPad listens through its microphone, so there's no MIDI and nothing to install. Built with Svelte 5, Vite and TypeScript. Songs and progress are saved online in Netlify Blobs through a small Netlify function, so they are shared between devices.
 
 ## Modes
 - **Discover**: "Just play" lights up whatever key you play. "Find the key" makes one key glow and cheers when you find it.
@@ -28,6 +28,12 @@ The microphone only works on `https://` or `localhost`.
 - `src/lib/synth.ts`: the small synth behind "Listen first".
 - `src/components/NoteRunner.svelte`: the play-along engine shared by songs and lessons.
 - `src/pages/*`: Home, Discover, the song list and player, the Adventure map, a place's lessons, and a single lesson.
+
+## Saved data (Netlify Blobs)
+`netlify/functions/api.mts` serves `/api/songs` and `/api/progress` from the Blobs store `piano-play`. The logic is in `netlify/lib/api-core.mts`.
+- **Progress:** a grown-up types a family code (at least 6 characters) once per device under ⚙️. Every device with the same code shares the same stars. The server stores progress under a SHA-256 hash of the code and keeps the best stars when two devices save. The device only remembers the code. Without a code, stars last until the page closes. Progress saved on the device by older versions moves online the first time a code is entered.
+- **Songs:** the first request copies the built-in songs into the store. After that the stored list is used, and any new built-in songs are added to it. To replace the list, set `SONGS_ADMIN_KEY` in Netlify's environment variables and send `PUT /api/songs` with header `x-admin-key` and body `{"songs": [...]}`. If the server can't be reached, the app uses the built-in songs.
+- **Offline:** stars earned offline are saved when the connection comes back.
 
 ## Adding a song
 Add an entry to `SONGS` in `src/lib/songs.ts`. Notes are letters (octave 4 by default, or `C5`, `G3`), with an optional `:beats` (default 1). Separate phrases with `|`. Lessons are generated from the phrases automatically.

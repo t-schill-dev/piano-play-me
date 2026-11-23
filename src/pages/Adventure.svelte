@@ -15,6 +15,9 @@
     Welcome back! You have {progress.totalStars()} stars. Where shall we go next?
   {/if}
 </Pip>
+{#if !progress.code}
+  <p class="muted small" style="margin:0 0 8px">Stars are not being saved yet. A grown-up can turn this on with ⚙️.</p>
+{/if}
 <div class="path">
   {#each SONGS as s, i (s.id)}
     {@const open = progress.songUnlocked(i)}

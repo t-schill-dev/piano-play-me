@@ -7,9 +7,32 @@
   const mf = $derived(f && f.r.freq ? freqToMidi(f.r.freq) : null);
   const s = listener.settings;
   let confirmReset = $state(false);
+  let codeInput = $state('');
+  const STATUS: Record<string, string> = {
+    none: 'Not saving yet. Stars disappear when the page is closed.',
+    loading: 'Loading stars…', saving: 'Saving…', saved: 'Saved online ✓',
+    offline: 'Offline. Stars will be saved when the internet is back.', error: 'Could not save.',
+  };
 </script>
 
 <section class="debug">
+  <h3 style="margin:0 0 6px">Save stars online</h3>
+  {#if progress.code}
+    <p class="muted" style="margin:0">Family code <b>{progress.code}</b> · {STATUS[progress.status]}</p>
+    {#if progress.problem && progress.status === 'error'}<p class="err">{progress.problem}</p>{/if}
+    <div class="row" style="margin-top:8px">
+      <button class="pill" onclick={() => progress.disconnect()}>Use a different code on this device</button>
+    </div>
+  {:else}
+    <p class="muted" style="margin:0">Pick a family code (at least 6 letters or numbers) and type the same code on every device.
+      Stars are then saved online and shared between them. Keep it private, like a password.</p>
+    <form class="row" style="margin-top:8px" onsubmit={(e) => { e.preventDefault(); void progress.connect(codeInput); }}>
+      <input class="pill" style="min-width:220px" bind:value={codeInput} placeholder="Family code" autocomplete="off" autocapitalize="off" spellcheck="false" />
+      <button class="pill go" type="submit">Save stars online</button>
+    </form>
+    {#if progress.problem}<p class="err">{progress.problem}</p>{/if}
+  {/if}
+  <h3 style="margin:18px 0 0">Listening</h3>
   <p class="muted" style="margin:0">Live accuracy readout and listening settings.</p>
   <div class="grid">
     <div class="cell"><span>Frequency</span><b>{f && f.r.freq ? f.r.freq.toFixed(1) + ' Hz' : '–'}</b></div>
