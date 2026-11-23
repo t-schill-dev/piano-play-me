@@ -51,6 +51,8 @@ class Family {
   current = $state<Player | null>(null);
   status = $state<FamilyStatus>('none');
   problem = $state('');
+  /** A friendly note for the "Who's playing?" screen, for example after the code was changed. */
+  notice = $state('');
 
   constructor() {
     if (this.code) void this.load();
@@ -60,7 +62,13 @@ class Family {
     if (!this.code) return false;
     this.status = 'loading'; this.problem = '';
     try {
-      const r = await api<{ players: Player[]; settings?: { showGuest?: boolean } }>('GET', '/api/family', this.code);
+      const r = await api<{ exists?: boolean; players: Player[]; settings?: { showGuest?: boolean } }>('GET', '/api/family', this.code);
+      if (r.exists === false) {
+        // The code was changed or the family removed on another device: log out here.
+        this.disconnect();
+        this.notice = 'This device was logged out because the family code changed. Please log in with the new code.';
+        return false;
+      }
       this.players = r.players;
       this.showGuest = r.settings?.showGuest === true;
       this.status = 'ready';
@@ -71,21 +79,59 @@ class Family {
     }
   }
 
-  /** Log in on this device with a family code. */
-  async connect(code: string): Promise<boolean> {
+  /**
+   * Log in on this device with a family code. Resolves 'missing' when no family uses the code,
+   * so the screen can ask whether to create one (a typo should never start an empty family).
+   */
+  async connect(code: string): Promise<'ok' | 'missing' | 'failed'> {
     code = code.trim();
-    if (code.length < MIN_CODE) { this.problem = `Please use at least ${MIN_CODE} letters or numbers.`; return false; }
+    this.problem = ''; this.notice = '';
+    if (code.length < MIN_CODE) { this.problem = `Please use at least ${MIN_CODE} letters or numbers.`; return 'failed'; }
+    try {
+      const r = await api<{ exists?: boolean }>('GET', '/api/family', code);
+      if (r.exists === false) return 'missing';
+    } catch (e) {
+      this.fail(e); this.status = 'none';
+      return 'failed';
+    }
     this.code = code;
     writeLocal(CODE_KEY, code);
-    const ok = await this.load();
-    if (!ok) { this.code = ''; writeLocal(CODE_KEY, null); }
-    return ok;
+    return (await this.load()) ? 'ok' : 'failed';
+  }
+
+  /** Start a new family with this code (after the grown-up confirmed it in the popup). */
+  async create(code: string): Promise<boolean> {
+    code = code.trim();
+    try {
+      await api('PUT', '/api/family', code, { players: [], settings: { showGuest: false }, create: true });
+    } catch (e) {
+      this.fail(e); this.status = 'none';
+      return false;
+    }
+    this.code = code;
+    writeLocal(CODE_KEY, code);
+    return this.load();
+  }
+
+  /** Move players, settings and stars to a new family code, then log out on this device. */
+  async changeCode(newCode: string): Promise<boolean> {
+    newCode = newCode.trim();
+    if (newCode.length < MIN_CODE) { this.problem = `Please use at least ${MIN_CODE} letters or numbers.`; return false; }
+    try {
+      await api('POST', '/api/family/move', this.code, { newCode });
+    } catch (e) {
+      this.problem = (e as { status?: number }).status == null ? 'No internet right now. Try again in a moment.' : (e as Error).message;
+      return false;
+    }
+    this.disconnect();
+    this.notice = 'Family code changed. All players and stars are safe. Log in with the new code.';
+    return true;
   }
 
   /** Log out on this device. Players and stars stay online under the code. */
   disconnect(): void {
     this.code = ''; writeLocal(CODE_KEY, null);
-    this.players = []; this.showGuest = false; this.status = 'none'; this.problem = '';
+    this.players = []; this.showGuest = false; this.status = 'none'; this.problem = ''; this.notice = '';
     this.choose(null);
   }
 

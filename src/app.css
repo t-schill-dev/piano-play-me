@@ -197,3 +197,7 @@ h2 { font-size: 24px; margin: 14px 0 6px; }
 @media (max-height: 820px) { .player .face { width: 112px; height: 112px; font-size: 64px; } .players { margin-top: 10px; } }
 @media (max-width: 600px) { .avatar-pick { grid-template-columns: repeat(5, 52px); } }
 h1 .title { background: none; border: 0; padding: 4px 2px; font: inherit; font-weight: 800; color: inherit; }
+
+.overlay .sheet.small { max-width: 520px; margin-top: 12vh; }
+.overlay .sheet.small p { font-size: 17px; line-height: 1.45; }
+.notice { background: var(--accent-soft); border-radius: 12px; padding: 10px 14px; max-width: 620px; margin: 8px auto 0; }

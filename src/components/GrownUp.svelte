@@ -15,6 +15,9 @@
   let unlocked = $state(false);
   let codeCheck = $state('');
   let wrongCode = $state(false);
+  let newCode = $state('');
+  let newCode2 = $state('');
+  let codeMsg = $state('');
   const STATUS: Record<string, string> = {
     none: 'Not saved (Guest).',
     loading: 'Loading stars…', saving: 'Saving…', saved: 'Saved online ✓',
@@ -25,6 +28,7 @@
 <section class="debug">
   <h3 style="margin:0 0 6px">Family and players</h3>
   {#if !family.code}
+    {#if family.notice}<p class="notice" style="margin:0 0 8px">{family.notice}</p>{/if}
     <p class="muted" style="margin:0">Not logged in. Guest can play, but nothing is saved and nothing here can be changed or erased.
       To see your family, tap "Family login" on the "Who's playing?" screen.</p>
   {:else}
@@ -75,6 +79,14 @@
           {/if}
         </div>
       {/if}
+      <h3 style="margin:16px 0 4px">Change family code</h3>
+      <p class="muted small" style="margin:0">All players and stars move to the new code. Then every device is logged out, and you log in again with the new code.</p>
+      <form class="row" style="margin-top:6px" onsubmit={async (e) => { e.preventDefault(); codeMsg = ''; if (newCode.trim() !== newCode2.trim()) { codeMsg = 'The two new codes are not the same.'; return; } if (await family.changeCode(newCode)) { newCode = ''; newCode2 = ''; unlocked = false; } }}>
+        <input class="pill" type="password" bind:value={newCode} placeholder="New family code" autocomplete="off" aria-label="New family code" />
+        <input class="pill" type="password" bind:value={newCode2} placeholder="New code again" autocomplete="off" aria-label="New family code again" />
+        <button class="pill" type="submit" disabled={newCode.trim().length < 6}>Change code</button>
+      </form>
+      {#if codeMsg}<p class="err">{codeMsg}</p>{/if}
       <div class="row" style="margin-top:10px">
         <button class="pill" onclick={() => { unlocked = false; editing = null; removing = null; confirmReset = false; }}>🔒 Lock again</button>
       </div>
