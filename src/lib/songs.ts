@@ -112,13 +112,6 @@ export const SONGS: Song[] = [
     done: 'Hans hears his song and hurries home. His mum gives him the biggest hug!'
   },
   {
-    id: 'abend', title: "Guten Abend, gut' Nacht", emoji: '🌙', bpm: 84,
-    notes: 'E:0.5 E:0.5 G:3 E:0.5 E:0.5 G:3 | E:0.5 G:0.5 C5:2 B:1.5 A:0.5 A:2 G:2 | D:0.5 E:0.5 F:2 D D:0.5 E:0.5 F:3 | D:0.5 F:0.5 B:0.5 A:0.5 G:2 B:2 C5:4 | C:0.5 C:0.5 C5:3 A:0.5 F:0.5 G:3 | E:0.5 C:0.5 F G A G:3 | C:0.5 C:0.5 C5:3 A:0.5 F:0.5 G:3 | E:0.5 C:0.5 F E D C:4',
-    place: 'Moonlight Meadow', friend: 'the Sleepy Bunnies',
-    intro: 'The bunnies in Moonlight Meadow are tired, but they can not fall asleep. A soft goodnight song will help them.',
-    done: 'The bunnies yawn, snuggle up and close their eyes. Sweet dreams, little bunnies.'
-  },
-  {
     id: 'stille', title: 'Stille Nacht', emoji: '🕯️', bpm: 96,
     notes: 'D:1.5 E:0.5 D B3:3 | D:1.5 E:0.5 D B3:3 | A:2 A F#:3 | G:2 G D:3 | E:2 E G:1.5 F#:0.5 E | D:1.5 E:0.5 D B3:3 | E:2 E G:1.5 F#:0.5 E | D:1.5 E:0.5 D B3:3 | A:2 A C5:1.5 A:0.5 F# | G:3 B:3 | G:1.5 D:0.5 B3 D:1.5 C:0.5 A3 | G3:6',
     place: 'Winter Village', friend: 'the Village',
