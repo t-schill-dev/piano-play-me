@@ -13,7 +13,7 @@ export const GUEST: Player = { id: 'guest', name: 'Guest', avatar: '👋' };
 export const AVATARS = ['🐶', '🐱', '🦊', '🐻', '🐼', '🐰', '🦁', '🐸', '🐵', '🦄', '🐧', '🐢', '🐙', '🦖'];
 const COLORS = ['#fde2d8', '#fdecc8', '#fbf1bd', '#dff0d3', '#d6eaf5', '#e6defa', '#f8dcea'];
 export const avatarColor = (p: Player): string =>
-  p.id === 'guest' ? '#ece7df' : COLORS[Math.abs([...p.id].reduce((a, c) => a * 31 + c.charCodeAt(0), 7)) % COLORS.length];
+  p.id === 'guest' ? '#e3ebf4' : COLORS[Math.abs([...p.id].reduce((a, c) => a * 31 + c.charCodeAt(0), 7)) % COLORS.length];
 
 export const MIN_CODE = 6;
 export const MAX_PLAYERS = 8;
