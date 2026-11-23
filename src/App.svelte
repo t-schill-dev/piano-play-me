@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Logo from './components/Logo.svelte';
   import { listener } from './lib/listener.svelte';
   import { router } from './lib/router.svelte';
   import Home from './pages/Home.svelte';
@@ -20,7 +21,7 @@
 <main>
   <header class="top">
     <div class="brand">
-      <h1><button class="title" onclick={() => router.go('')} aria-label="Piano Play, go to the home screen">🎹 Piano Play</button></h1>
+      <h1><button class="title" onclick={() => router.go('')} aria-label="Piano Playtime, go to the home screen"><Logo /><span class="wordmark"><span class="w1">Piano</span> <span class="w2">Playtime</span></span></button></h1>
     </div>
     <div class="row">
       {#if family.current}

@@ -1,0 +1,22 @@
+<!-- Little blue piano friend for the header. Keys echo the app's palette. -->
+<svg class="logo" viewBox="0 0 64 56" width="52" height="45" aria-hidden="true" focusable="false">
+  <path d="M10 28 C8 12 18 4 32 4 C42 4 47 9 52 12 C57 15 58 22 56 28 Z" fill="#4aa3e8" stroke="#1f5c99" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M17 12 C21 8 27 7 31 7" stroke="#bfe3fb" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="26" cy="19" r="2.6" fill="#1f2a44"/><circle cx="40" cy="19" r="2.6" fill="#1f2a44"/>
+  <circle cx="26.9" cy="18.1" r=".9" fill="#fff"/><circle cx="40.9" cy="18.1" r=".9" fill="#fff"/>
+  <path d="M30 23.5 Q33 26.5 36 23.5" stroke="#1f2a44" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <circle cx="21" cy="23.5" r="2.4" fill="#f9a7a0" opacity=".7"/><circle cx="45" cy="23.5" r="2.4" fill="#f9a7a0" opacity=".7"/>
+  <rect x="7" y="28" width="50" height="19" rx="4" fill="#f59a3c" stroke="#b85f12" stroke-width="2.5"/>
+  <rect x="10.5" y="31" width="6" height="13" rx="1.5" fill="#f37b6e"/>
+  <rect x="17.5" y="31" width="6" height="13" rx="1.5" fill="#f7c84a"/>
+  <rect x="24.5" y="31" width="6" height="13" rx="1.5" fill="#7ccf9a"/>
+  <rect x="31.5" y="31" width="6" height="13" rx="1.5" fill="#6cc0f0"/>
+  <rect x="38.5" y="31" width="6" height="13" rx="1.5" fill="#a78be0"/>
+  <rect x="45.5" y="31" width="6" height="13" rx="1.5" fill="#f2a0c4"/>
+  <rect x="14.5" y="31" width="3.4" height="7.5" rx="1" fill="#1f2a44"/>
+  <rect x="21.5" y="31" width="3.4" height="7.5" rx="1" fill="#1f2a44"/>
+  <rect x="35.5" y="31" width="3.4" height="7.5" rx="1" fill="#1f2a44"/>
+  <rect x="42.5" y="31" width="3.4" height="7.5" rx="1" fill="#1f2a44"/>
+  <rect x="14" y="47" width="5" height="6" rx="2" fill="#b85f12"/><rect x="45" y="47" width="5" height="6" rx="2" fill="#b85f12"/>
+</svg>
+<style>.logo { display: block; }</style>

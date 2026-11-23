@@ -1,4 +1,4 @@
-# Piano Play
+# Piano Playtime
 
 A web app that helps a child learn simple songs on a real acoustic piano. The iPad listens through its microphone, so there's no MIDI and nothing to install. Built with Svelte 5, Vite and TypeScript. Songs and progress are saved online in Netlify Blobs through a small Netlify function, so they are shared between devices.
 
@@ -33,7 +33,7 @@ The microphone only works on `https://` or `localhost`.
 `netlify/functions/api.mts` serves `/api/songs`, `/api/family` and `/api/progress` from the Blobs store `piano-play`. The logic is in `netlify/lib/api-core.mts`.
 - **Family login and players:** the app opens on "Who's playing?". The family code (at least 6 characters) is the login, and a grown-up types it once per device. Inside a family, players work like profiles: each has a name and an animal avatar, and their own stars. Add players with the ＋ tile, and rename or remove them under ⚙️ (removing a player deletes their stars). Up to 8 players.
 - **Guest** is always on the picker when nobody is logged in. Guest starts fresh and is never saved. Once a family is logged in, Guest is hidden unless a grown-up turns on "Show Guest" under ⚙️.
-- **Header:** tap "🎹 Piano Play" to go home. "Log out" (top right, only when logged in) forgets the code on this device and goes back to the Guest screen.
+- **Header:** tap the logo and "Piano Playtime" to go home. "Log out" (top right, only when logged in) forgets the code on this device and goes back to the Guest screen.
 - **Unknown codes:** logging in with a code no family uses shows a popup: "Create new family" or "Try again". A mistyped code never starts an empty family.
 - **Changing the family code:** under ⚙️ (after unlocking), "Change family code" moves all players, settings and stars to the new code (`POST /api/family/move`) and logs out. Other devices still using the old code are logged out with a note the next time they open the app.
 - **Protecting stars:** while nobody is logged in, ⚙️ has nothing to change or erase. While logged in, changing players, the Guest setting or stars needs the family code typed again under ⚙️ ("Unlock changes").
