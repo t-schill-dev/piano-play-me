@@ -117,6 +117,35 @@ export const SONGS: Song[] = [
     place: 'Winter Village', friend: 'the Village',
     intro: 'It is a quiet winter night in the village, and everyone would love a calm song. This one has a black key in it: F sharp. Pip will show you where it is.',
     done: 'The candles glow and the whole village listens. What a peaceful song you played.'
+  },
+  // English songs (traditional / public domain). Notes written from memory: check by ear.
+  {
+    id: 'hickory', title: 'Hickory Dickory Dock', emoji: '🐭', bpm: 100,
+    notes: 'E D C D E E E | D D D | E G G | E D C D E E E | D D E D C:4',
+    place: 'Clock Tower', friend: 'the Little Mouse',
+    intro: 'A little mouse ran up the clock tower and can not find the way down. Your song will help it climb back down.',
+    done: 'Tick, tock! The mouse hops safely down the clock tower and waves goodbye.'
+  },
+  {
+    id: 'weasel', title: 'Pop Goes the Weasel', emoji: '🐒', bpm: 104,
+    notes: 'E E G E D | E G G | A G E G | C D C | E E G E D | E G G | A G E D C:2',
+    place: 'Market Street', friend: 'the Monkey',
+    intro: 'The monkey on Market Street is up to something silly. Can you play his tune so the fun can start?',
+    done: 'Pop! The monkey laughs and everyone on Market Street claps along.'
+  },
+  {
+    id: 'bingo', title: 'Bingo', emoji: '🐄', bpm: 100,
+    notes: 'G G D E D | G G D E D | G G G E F F E | D C D E D:2',
+    place: 'Farmyard', friend: 'the Farmer',
+    intro: 'The farmer lost his favourite tune in the farmyard. Can you help him find it again?',
+    done: 'The farmer sings along and the animals all moo, baa and cluck with joy.'
+  },
+  {
+    id: 'shenandoah', title: 'Shenandoah', emoji: '⛵', bpm: 88,
+    notes: 'C E G E D | C E G E D:2 | C E G E D C:2 | G A G E D:2',
+    place: 'River Bend', friend: 'the Riverboat Captain',
+    intro: 'The riverboat captain is missing his song, and the boat can not leave the river bend without it.',
+    done: 'The captain smiles, the boat sails off down the river, and your song goes with it.'
   }
 ];
 

@@ -4,7 +4,7 @@ A web app that helps a child learn simple songs on a real acoustic piano. The iP
 
 ## Modes
 - **Discover**: "Just play" lights up whatever key you play. "Find the key" makes one key glow and cheers when you find it.
-- **Play a Song**: pick one of 12 public-domain songs, including German children's songs (Alle meine Entchen, Hänschen klein, Bruder Jakob, Guten Abend gut' Nacht, Stille Nacht). Coloured note bubbles show the tune, the next key glows, and the app waits for the right note. "Listen first" plays the tune (the mic ignores it while it plays).
+- **Play a Song**: pick one of 16 public-domain songs, including German children's songs (Alle meine Entchen, Hänschen klein, Bruder Jakob, Guten Abend gut' Nacht, Stille Nacht). Coloured note bubbles show the tune, the next key glows, and the app waits for the right note. "Listen first" plays the tune (the mic ignores it while it plays).
 - **Adventure**: Pip the piano mouse helps friends who need songs. Each place has 4–5 lessons. You meet the notes, learn the song in parts (each part played twice), then play the whole song. Lessons earn 1–3 stars and unlock one after another. Finishing a place opens the next one and adds a 🏅 to that song.
 
 Every screen fits the iPad without scrolling: the piano takes whatever space is left, and long songs show two rows of notes at a time.
