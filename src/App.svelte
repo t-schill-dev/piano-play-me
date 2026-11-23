@@ -20,10 +20,7 @@
 <main>
   <header class="top">
     <div class="brand">
-      {#if r.name !== 'home' && family.current}
-        <button class="pill" onclick={() => router.go('')} aria-label="Home">🏠 Home</button>
-      {/if}
-      <h1>🎹 Piano Play</h1>
+      <h1><button class="title" onclick={() => router.go('')} aria-label="Piano Play, go to the home screen">🎹 Piano Play</button></h1>
     </div>
     <div class="row">
       {#if family.current}
@@ -32,6 +29,9 @@
         </button>
       {/if}
       <button class="pill gear" onclick={() => (grownUp = true)} aria-label="Grown-up corner">⚙️</button>
+      {#if family.code}
+        <button class="pill" onclick={() => { family.disconnect(); grownUp = false; router.go(''); }}>Log out</button>
+      {/if}
       {#if listener.running}
         <button class="pill stop" onclick={() => listener.stop()}>■ Stop listening</button>
       {:else if r.name !== 'home' && family.current}

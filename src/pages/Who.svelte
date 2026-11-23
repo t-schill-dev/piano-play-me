@@ -31,10 +31,12 @@
           <b>{p.name}</b>
         </button>
       {/each}
-      <button class="player" onclick={() => family.choose(GUEST)}>
-        <span class="face" style="background: {avatarColor(GUEST)}">{GUEST.avatar}</span>
-        <b>Guest</b><small>Just trying it out</small>
-      </button>
+      {#if !family.code || family.showGuest}
+        <button class="player" onclick={() => family.choose(GUEST)}>
+          <span class="face" style="background: {avatarColor(GUEST)}">{GUEST.avatar}</span>
+          <b>Guest</b><small>Just trying it out</small>
+        </button>
+      {/if}
       {#if family.code && family.status === 'ready' && family.players.length < MAX_PLAYERS}
         <button class="player add" onclick={() => (adding = true)}>
           <span class="face">＋</span><b>Add player</b>
