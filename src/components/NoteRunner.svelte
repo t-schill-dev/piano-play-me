@@ -11,7 +11,6 @@
   import type { Note } from '../lib/songs';
   import Piano from './Piano.svelte';
   import Meter from './Meter.svelte';
-  import MicGate from './MicGate.svelte';
 
   interface Props {
     notes: Note[];
@@ -90,7 +89,6 @@
   }
 </script>
 
-<MicGate />
 {#if !finished}
   <div class="bubble">
     <div class="big">Play <span style="color: {current ? colorOf(current.midi) : 'inherit'}">{current ? midiLetter(current.midi) : ''}</span></div>
