@@ -64,7 +64,7 @@ export const SONGS: Song[] = [
     done: 'The party starts and everyone dances in the big hall. Thank you, music maker!'
   },
   {
-    id: 'jacques', title: 'Bruder Jakob', titleEn: 'Frère Jacques', emoji: '🔔', bpm: 104,
+    id: 'jacques', title: 'Bruder Jakob', titleEn: 'Brother John', emoji: '🔔', bpm: 104,
     notes: 'C D E C C D E C | E F G:2 E F G:2 | G:0.5 A:0.5 G:0.5 F:0.5 E C G:0.5 A:0.5 G:0.5 F:0.5 E C | C G3 C:2 C G3 C:2',
     place: 'Sleepy Tower', friend: 'Brother John',
     intro: 'Brother John is still asleep in Sleepy Tower. A gentle bell song will help him wake up.',
