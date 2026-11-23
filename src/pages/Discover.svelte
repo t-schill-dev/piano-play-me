@@ -4,7 +4,6 @@
   import { isBlack, midiLetter, midiName } from '../lib/pitch';
   import Piano from '../components/Piano.svelte';
   import Meter from '../components/Meter.svelte';
-  import MicGate from '../components/MicGate.svelte';
 
   let tab = $state<'free' | 'find'>('free');
   let pool = $state<'five' | 'white' | 'all'>('five');
@@ -71,7 +70,6 @@
     <button class="pill" class:on={tab === 'free'} onclick={() => setTab('free')}>🎹 Just play</button>
     <button class="pill" class:on={tab === 'find'} onclick={() => setTab('find')}>🔍 Find the key</button>
   </div>
-  <MicGate />
   <div class="bubble">
     <div class="big {msg.cls}">{msg.big}</div>
     <div class="say">{msg.small}</div>
