@@ -20,15 +20,15 @@ export const LANGS: { id: Lang; title: string; emoji: string }[] = [
 export const LISTS: Record<Level, Record<Lang, string[]>> = {
   easy: {
     en: ['buns', 'mary', 'twinkle', 'ode', 'hickory', 'weasel'],
-    de: ['entchen', 'haenschen'],
+    de: ['entchen', 'haenschen', 'weihnachts', 'summ', 'kuckuck', 'backe'],
   },
   challenging: {
     en: ['bridge', 'row', 'jacques', 'jingle', 'bingo'],
-    de: ['jacques'],
+    de: ['jacques', 'fuchs', 'voegel', 'maennlein', 'vogel', 'oma'],
   },
   hard: {
     en: ['shenandoah'],
-    de: ['stille'],
+    de: ['stille', 'tannenbaum', 'kinderlein', 'mond', 'sternlein', 'gedanken'],
   },
 };
 
