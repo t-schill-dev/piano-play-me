@@ -207,3 +207,4 @@ h1 .title { display: flex; align-items: center; gap: 8px; background: none; bord
 .wordmark .w1 { color: var(--accent); }
 .wordmark .w2 { color: #e8821a; }
 .no-flex-gap h1 .title > * { margin-right: 8px; }
+.pill.back { font-weight: 800; padding: 8px 14px; }

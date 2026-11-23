@@ -1,5 +1,6 @@
 <script lang="ts">
   import Logo from './components/Logo.svelte';
+  import { lastSongsPath } from './lib/lists';
   import { listener } from './lib/listener.svelte';
   import { router } from './lib/router.svelte';
   import Home from './pages/Home.svelte';
@@ -16,11 +17,26 @@
   const r = $derived(router.route);
   const key = $derived(r.name + '/' + r.params.join('/'));
   let grownUp = $state(false);
+  /** Where the back arrow goes from the current page. Null on the home screen. */
+  const backPath = $derived.by((): string | null => {
+    const p = r.params;
+    switch (r.name) {
+      case 'home': return null;
+      case 'songs': return p.length <= 1 ? '' : p.length === 2 ? 'songs/' + p[0] : '';
+      case 'play': return lastSongsPath();
+      case 'journey': return 'adventure';
+      case 'lesson': return 'journey/' + p[0];
+      default: return '';
+    }
+  });
 </script>
 
 <main>
   <header class="top">
     <div class="brand">
+      {#if backPath !== null}
+        <button class="pill back" onclick={() => router.go(backPath ?? '')} aria-label="Back">← Back</button>
+      {/if}
       <h1><button class="title" onclick={() => router.go('')} aria-label="Piano Playtime, go to the home screen"><Logo /><span class="wordmark"><span class="w1">Piano</span> <span class="w2">Playtime</span></span></button></h1>
     </div>
     <div class="row">
