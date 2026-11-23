@@ -35,7 +35,7 @@
   <p>This lesson isn't open yet. <button class="pill" onclick={() => router.go('journey/' + lang + '/' + id)}>Back</button></p>
 {:else}
   <div class="stage fill">
-    <h2 class="center">{song.emoji} Lesson {n + 1}: {lesson.title}</h2>
+    <h2 class="center">{song.emoji} {song.place}: {titleIn(song, lang)} · Lesson {n + 1}: {lesson.title}</h2>
     {#if earned != null}
       <div class="finish">
         <div class="big">{isLast ? 'You can play ' + titleIn(song, lang) + '! 🏅' : 'Lesson done! 🎉'}</div>

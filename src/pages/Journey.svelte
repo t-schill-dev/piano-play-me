@@ -15,7 +15,7 @@
 {#if !song || songIndex < 0 || !progress.songUnlocked(path, songIndex)}
   <p>This place isn't open yet. <button class="pill" onclick={() => router.go('adventure/' + lang)}>Back to the map</button></p>
 {:else}
-  <h2>{song.emoji} {song.place}</h2>
+  <h2>{song.emoji} {song.place}: {titleIn(song, lang)}</h2>
   <Pip>{progress.songDone(song) ? song.done + ' You can play this song any time in Play a Song.' : song.intro}</Pip>
   <div class="path">
     {#each lessons as l, i (i)}
