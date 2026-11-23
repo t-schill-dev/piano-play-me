@@ -12,6 +12,7 @@
 
   const r = $derived(router.route);
   const key = $derived(r.name + '/' + r.params.join('/'));
+  let grownUp = $state(false);
 </script>
 
 <main>
@@ -23,6 +24,7 @@
       <h1>🎹 Piano Play</h1>
     </div>
     <div class="row">
+      <button class="pill gear" onclick={() => (grownUp = true)} aria-label="Grown-up corner">⚙️</button>
       {#if listener.running}
         <button class="pill stop" onclick={() => listener.stop()}>■ Stop listening</button>
       {:else if r.name !== 'home'}
@@ -32,6 +34,7 @@
   </header>
   {#if listener.error}<div class="err">{listener.error}</div>{/if}
 
+  <div class="view">
   {#key key}
     {#if r.name === 'discover'}<Discover />
     {:else if r.name === 'songs'}<SongList />
@@ -42,6 +45,17 @@
     {:else}<Home />
     {/if}
   {/key}
-
-  <GrownUp />
+  </div>
 </main>
+
+{#if grownUp}
+  <div class="overlay" role="dialog" aria-label="Grown-up corner">
+    <div class="sheet">
+      <div class="row" style="justify-content: space-between">
+        <h2 style="margin:0">Grown-up corner</h2>
+        <button class="pill" onclick={() => (grownUp = false)}>✕ Close</button>
+      </div>
+      <GrownUp />
+    </div>
+  </div>
+{/if}

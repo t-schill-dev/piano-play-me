@@ -62,7 +62,7 @@ export const SONGS: Song[] = [
     done: 'The party starts and everyone dances in the big hall. Thank you, music maker!'
   },
   {
-    id: 'jacques', title: 'Are You Sleeping (Frère Jacques)', emoji: '🔔', bpm: 104,
+    id: 'jacques', title: 'Bruder Jakob (Frère Jacques)', emoji: '🔔', bpm: 104,
     notes: 'C D E C C D E C | E F G:2 E F G:2 | G:0.5 A:0.5 G:0.5 F:0.5 E C G:0.5 A:0.5 G:0.5 F:0.5 E C | C G3 C:2 C G3 C:2',
     place: 'Sleepy Tower', friend: 'Brother John',
     intro: 'Brother John is still asleep in Sleepy Tower. A gentle bell song will help him wake up.',
@@ -88,6 +88,35 @@ export const SONGS: Song[] = [
     place: 'Gentle River', friend: 'Pip',
     intro: 'Pip wants to row a little boat down Gentle River. A rowing song keeps the oars in time.',
     done: 'Pip rows all the way down the river, singing your song. What a lovely trip!'
+  },
+  // German children's songs (traditional / public domain).
+  {
+    id: 'entchen', title: 'Alle meine Entchen', emoji: '🦆', bpm: 104,
+    notes: 'C D E F G:2 G:2 | A A A A G:4 | A A A A G:4 | F F F F E:2 E:2 | D D D D C:4',
+    place: 'Duck Pond', friend: 'the Little Ducks',
+    intro: 'The little ducks want to go for a swim, but they only jump in when they hear their song. Will you play it for them?',
+    done: 'Splash! Heads in the water, tails up high. The little ducks are so happy!'
+  },
+  {
+    id: 'haenschen', title: 'Hänschen klein', emoji: '🎒', bpm: 104,
+    notes: 'G E E:2 F D D:2 | C D E F G G G:2 | G E E:2 F D D:2 | C E G G C:4 | D D D D D E F:2 | E E E E E F G:2 | G E E:2 F D D:2 | C E G G C:4',
+    place: 'The Long Path', friend: 'Little Hans',
+    intro: 'Little Hans walked off into the big wide world, and his mum misses him. If he hears his song, he will find the way home.',
+    done: 'Hans hears his song and hurries home. His mum gives him the biggest hug!'
+  },
+  {
+    id: 'abend', title: "Guten Abend, gut' Nacht", emoji: '🌙', bpm: 84,
+    notes: 'E:0.5 E:0.5 G:3 E:0.5 E:0.5 G:3 | E:0.5 G:0.5 C5:2 B:1.5 A:0.5 A:2 G:2 | D:0.5 E:0.5 F:2 D D:0.5 E:0.5 F:3 | D:0.5 F:0.5 B:0.5 A:0.5 G:2 B:2 C5:4 | C:0.5 C:0.5 C5:3 A:0.5 F:0.5 G:3 | E:0.5 C:0.5 F G A G:3 | C:0.5 C:0.5 C5:3 A:0.5 F:0.5 G:3 | E:0.5 C:0.5 F E D C:4',
+    place: 'Moonlight Meadow', friend: 'the Sleepy Bunnies',
+    intro: 'The bunnies in Moonlight Meadow are tired, but they can not fall asleep. A soft goodnight song will help them.',
+    done: 'The bunnies yawn, snuggle up and close their eyes. Sweet dreams, little bunnies.'
+  },
+  {
+    id: 'stille', title: 'Stille Nacht', emoji: '🕯️', bpm: 96,
+    notes: 'D:1.5 E:0.5 D B3:3 | D:1.5 E:0.5 D B3:3 | A:2 A F#:3 | G:2 G D:3 | E:2 E G:1.5 F#:0.5 E | D:1.5 E:0.5 D B3:3 | E:2 E G:1.5 F#:0.5 E | D:1.5 E:0.5 D B3:3 | A:2 A C5:1.5 A:0.5 F# | G:3 B:3 | G:1.5 D:0.5 B3 D:1.5 C:0.5 A3 | G3:6',
+    place: 'Winter Village', friend: 'the Village',
+    intro: 'It is a quiet winter night in the village, and everyone would love a calm song. This one has a black key in it: F sharp. Pip will show you where it is.',
+    done: 'The candles glow and the whole village listens. What a peaceful song you played.'
   }
 ];
 

@@ -14,7 +14,7 @@
 {#if !song}
   <p>Hmm, I can't find that song. <button class="pill" onclick={() => router.go('songs')}>Back to songs</button></p>
 {:else}
-  <div class="stage">
+  <div class="stage fill">
     <h2 class="center">{song.emoji} {song.title}</h2>
     {#if result != null}
       <div class="finish">

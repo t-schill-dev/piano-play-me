@@ -22,7 +22,7 @@
     <button class="step" class:locked={!open} class:next={i === nextIndex} disabled={!open}
       onclick={() => router.go('journey/' + s.id)}>
       <span class="num">{open ? s.emoji : '🔒'}</span>
-      <span><b>{s.place}</b><small>{open ? s.title : 'Finish the place before this one to open it'}</small></span>
+      <span><b>{s.place}</b><small>{open ? s.title : 'Finish the place before to open it'}</small></span>
       <span class="st">{progress.songDone(s) ? '🏅 ' : ''}{earned ? '⭐ ' + earned : ''}</span>
     </button>
   {/each}

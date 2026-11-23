@@ -66,7 +66,7 @@
   onDestroy(() => { off(); clearTimeout(timer); });
 </script>
 
-<div class="stage">
+<div class="stage fill">
   <div class="sub-tabs">
     <button class="pill" class:on={tab === 'free'} onclick={() => setTab('free')}>🎹 Just play</button>
     <button class="pill" class:on={tab === 'find'} onclick={() => setTab('find')}>🔍 Find the key</button>
@@ -80,9 +80,8 @@
     <div class="stars" aria-live="polite">{'⭐'.repeat(Math.min(stars, 10))}{stars > 10 ? ' ×' + stars : ''}</div>
   {/if}
   <Meter />
-  <Piano target={tab === 'find' ? target : null} heard={listener.stableMidi} ontap={(m) => { if (tab === 'find') setTarget(m); }} />
   {#if tab === 'find'}
-    <div class="row center" style="margin-top:12px">
+    <div class="row center" style="margin-top:6px">
       <label for="pool" class="muted">Practice keys:</label>
       <select id="pool" class="pill" bind:value={pool} onchange={pickTarget}>
         <option value="five">C D E F G (middle C hand)</option>
@@ -93,4 +92,5 @@
       <span class="muted small">Tip: tap a key on screen to pick it.</span>
     </div>
   {/if}
+  <Piano target={tab === 'find' ? target : null} heard={listener.stableMidi} ontap={(m) => { if (tab === 'find') setTarget(m); }} />
 </div>

@@ -21,7 +21,8 @@
   }
 </script>
 
-<svg class="piano" viewBox="0 0 {width} {WHITE_H + 2}" role="group" aria-label="Piano keys from low C to high C">
+<div class="keys">
+<svg class="piano" preserveAspectRatio="xMidYMax meet" viewBox="0 0 {width} {WHITE_H + 2}" role="group" aria-label="Piano keys from low C to high C">
   {#each whites as k (k.m)}
     <rect class={cls(k.m, false)} x={k.x} y="1" width={WHITE_W} height={WHITE_H} rx="6"
       role="button" tabindex="-1" aria-label={midiLetter(k.m)}
@@ -38,3 +39,4 @@
       onclick={() => ontap?.(k.m)} onkeydown={() => {}} />
   {/each}
 </svg>
+</div>

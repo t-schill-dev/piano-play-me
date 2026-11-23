@@ -8,7 +8,24 @@
 html, body { margin: 0; background: var(--bg); color: var(--ink);
   font-family: -apple-system, "SF Pro Rounded", "Nunito", system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
-main { max-width: 1100px; margin: 0 auto; padding: 12px 16px 40px; }
+/* The app fills the visible screen (set from window.innerHeight in main.ts,
+   because 100vh on iPad Safari includes the toolbar) so kids never scroll. */
+html, body { height: 100%; overflow: hidden; }
+main { max-width: 1100px; margin: 0 auto; padding: 8px 16px 10px; height: 100vh; height: var(--app-h, 100vh);
+  display: flex; flex-direction: column; }
+main > * { flex-shrink: 0; }
+main > .view { flex: 1 1 auto; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; }
+.view > * { flex-shrink: 0; }
+.stage.fill { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; margin-top: 6px; padding: 10px 14px 12px; }
+.stage.fill > * { flex-shrink: 0; }
+.stage.fill > .keys { flex: 1 1 auto; min-height: 140px; position: relative; margin-top: 8px; }
+.stage.fill > .keys > svg.piano { position: absolute; top: 0; left: 0; width: 100%; height: 100%; margin: 0; }
+.stage.fill > .finish { margin: auto 0; }
+.pill.gear { padding: 8px 12px; }
+.overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(44, 42, 51, .35); z-index: 10;
+  overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 24px 16px; }
+.overlay .sheet { max-width: 900px; margin: 0 auto; background: var(--bg); border-radius: 20px; padding: 16px; }
+.overlay .debug { margin-top: 12px; }
 button { font: inherit; color: inherit; cursor: pointer; }
 .hidden { display: none !important; }
 .center { text-align: center; justify-content: center; }
@@ -20,9 +37,9 @@ button:disabled { cursor: default; }
 .tile, .card, .step { font: inherit; color: inherit; }
 .card > span:last-child, .step > span:nth-child(2) { display: block; }
 .ctrl .check { width: auto; justify-self: start; transform: scale(1.4); }
-.stage h2 { margin-top: 0; }
+.stage h2 { margin-top: 0; margin-bottom: 4px; }
 
-header.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; min-height: 56px; }
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; min-height: 52px; }
 .brand { display: flex; align-items: center; gap: 10px; }
 h1 { font-size: 24px; margin: 0; }
 .pill { font-size: 16px; padding: 10px 16px; border-radius: 999px; border: 2px solid var(--line); background: var(--card); }
@@ -45,7 +62,7 @@ h1 { font-size: 24px; margin: 0; }
 
 /* Shared stage */
 .stage { background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 16px; margin-top: 12px; }
-.bubble { min-height: 86px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.bubble { min-height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 .bubble .big { font-size: 40px; font-weight: 800; line-height: 1.1; }
 .bubble .say { font-size: 20px; color: var(--muted); margin-top: 6px; max-width: 760px; }
 .yes { color: var(--yes); animation: pop .5s ease-out; }
@@ -97,8 +114,8 @@ h2 { font-size: 24px; margin: 14px 0 6px; }
 .pip { display: flex; gap: 14px; align-items: flex-start; background: #fff8e8; border: 2px solid #f1dfb5; border-radius: 20px; padding: 14px 16px; margin: 8px 0 14px; }
 .pip .face { font-size: 48px; line-height: 1; }
 .pip p { margin: 0; font-size: 19px; line-height: 1.45; text-align: left; color: var(--ink); max-width: none; }
-.path { display: flex; flex-direction: column; gap: 12px; }
-.step { display: flex; align-items: center; gap: 14px; background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; text-align: left; width: 100%; }
+.path { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.step { display: flex; align-items: center; gap: 12px; background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 10px 14px; text-align: left; width: 100%; }
 .step .num { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--accent-soft); font-size: 24px; flex: none; }
 .step b { font-size: 19px; }
 .step small { display: block; color: var(--muted); font-size: 14px; }
@@ -111,8 +128,8 @@ h2 { font-size: 24px; margin: 14px 0 6px; }
 .finish p { font-size: 19px; color: var(--muted); max-width: 640px; margin: 8px auto; }
 
 /* Grown-up corner */
-details.debug { margin-top: 22px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 16px; -webkit-user-select: text; user-select: text; }
-details.debug summary { font-weight: 700; cursor: pointer; font-size: 16px; }
+.debug { margin-top: 22px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 16px; -webkit-user-select: text; user-select: text; }
+.debug summary { font-weight: 700; cursor: pointer; font-size: 16px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 12px; }
 .cell { background: #f7f3ec; border-radius: 10px; padding: 8px 10px; }
 .cell b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; }
@@ -134,4 +151,26 @@ details.debug summary { font-weight: 700; cursor: pointer; font-size: 16px; }
 .no-flex-gap .card > *,
 .no-flex-gap .pip > *,
 .no-flex-gap .step > * { margin: 4px; }
-.no-flex-gap .path > * { margin-bottom: 12px; }
+.no-flex-gap .stage.fill > .keys { margin-top: 8px; }
+
+/* Shorter screens (iPad in landscape with the Safari toolbar): tighten everything a little. */
+@media (max-height: 820px) {
+  h2 { font-size: 21px; }
+  .bubble { min-height: 64px; }
+  .bubble .big { font-size: 32px; }
+  .bubble .say { font-size: 17px; margin-top: 2px; }
+  .pip { padding: 8px 12px; margin: 4px 0 6px; }
+  .pip .face { font-size: 34px; }
+  .pip p { font-size: 16px; line-height: 1.35; }
+  .track { margin: 6px 0 2px; }
+  .nb { width: 38px; height: 38px; font-size: 16px; }
+  .nb.long { width: 54px; }
+  .player-ctrls { margin-top: 4px; }
+  .pill { padding: 8px 14px; }
+  .pill.big { font-size: 19px; padding: 12px 22px; }
+  .micgate { margin: 2px 0; }
+  .tiles { margin-top: 14px; }
+  .tile { padding: 18px 16px; }
+  .tile .ico { font-size: 48px; }
+  .hello { margin: 8px 0 4px; }
+}

@@ -32,7 +32,7 @@
 {#if !song || !lesson || !progress.lessonUnlocked(id, n)}
   <p>This lesson isn't open yet. <button class="pill" onclick={() => router.go('journey/' + id)}>Back</button></p>
 {:else}
-  <div class="stage">
+  <div class="stage fill">
     <h2 class="center">{song.emoji} Lesson {n + 1}: {lesson.title}</h2>
     {#if earned != null}
       <div class="finish">
