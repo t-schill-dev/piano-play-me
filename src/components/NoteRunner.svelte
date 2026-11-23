@@ -38,6 +38,14 @@
     return starts.map((s, i) => ({ start: s, end: i + 1 < starts.length ? starts[i + 1] : notes.length }));
   });
 
+  // Only the row being played and the next one are shown, so long songs fit on screen.
+  const shown = $derived.by(() => {
+    const at = playingIdx >= 0 ? playingIdx : idx;
+    let r = rows.findIndex((row) => at >= row.start && at < row.end);
+    if (r < 0) r = rows.length - 1;
+    return rows.slice(r, r + 2);
+  });
+
   const CHEERS = ['Yes!', 'Great!', 'Nice!', 'You got it!', 'Super!', 'Lovely!'];
   let cheerIdx = 0;
 
@@ -89,7 +97,7 @@
     <div class="say {feedback.cls}">{playingIdx >= 0 ? 'Listen…' : feedback.text || 'Find the glowing key.'}</div>
   </div>
   <div class="track">
-    {#each rows as row, ri (ri)}
+    {#each shown as row (row.start)}
       <div class="phrase">
         {#each notes.slice(row.start, row.end) as n, j (row.start + j)}
           {@const i = row.start + j}

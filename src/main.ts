@@ -14,6 +14,13 @@ function flexGapWorks(): boolean {
   d.remove()
   return ok
 }
+function setAppHeight(): void {
+  document.documentElement.style.setProperty('--app-h', window.innerHeight + 'px')
+}
+setAppHeight()
+window.addEventListener('resize', setAppHeight)
+window.addEventListener('orientationchange', () => setTimeout(setAppHeight, 300))
+
 if (!flexGapWorks()) document.documentElement.classList.add('no-flex-gap')
 
 const app = mount(App, {

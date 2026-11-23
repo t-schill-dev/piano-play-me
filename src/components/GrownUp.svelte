@@ -9,8 +9,8 @@
   let confirmReset = $state(false);
 </script>
 
-<details class="debug">
-  <summary>Grown-up corner: accuracy and settings</summary>
+<section class="debug">
+  <p class="muted" style="margin:0">Live accuracy readout and listening settings.</p>
   <div class="grid">
     <div class="cell"><span>Frequency</span><b>{f && f.r.freq ? f.r.freq.toFixed(1) + ' Hz' : '–'}</b></div>
     <div class="cell"><span>Raw note</span><b>{mf != null ? midiName(Math.round(mf)) + (f?.rawMidi == null ? ' ?' : '') : '–'}</b></div>
@@ -38,4 +38,4 @@
   <div class="log">{listener.log.length ? 'Steady notes heard (newest first):\n' + listener.log.join('\n') : ''}</div>
   <p class="tips">{listener.sampleRate ? `Sample rate: ${listener.sampleRate} Hz · ` : ''}{navigator.userAgent}</p>
   <p class="tips">To judge accuracy: in Discover, play each key from low C to high C slowly. "Raw note" should match right away, and "Steady note" should settle quickly without flickering. If it misses soft notes, lower the gate. If keys light up when nobody plays, raise it. "Piano only" ignores sounds that don't start with a key strike or whose pitch wobbles, like talking. If it ignores real piano notes, raise "Pitch wobble allowed".</p>
-</details>
+</section>
