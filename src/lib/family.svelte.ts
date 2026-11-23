@@ -45,6 +45,8 @@ type FamilyStatus = 'none' | 'loading' | 'ready' | 'offline' | 'error';
 class Family {
   code = $state(readLocal(CODE_KEY) ?? '');
   players = $state<Player[]>([]);
+  /** Offer Guest on "Who's playing?" while logged in. Off by default; Guest always shows when logged out. */
+  showGuest = $state(false);
   /** Who is playing right now. null shows the "Who's playing?" screen. */
   current = $state<Player | null>(null);
   status = $state<FamilyStatus>('none');
@@ -58,8 +60,9 @@ class Family {
     if (!this.code) return false;
     this.status = 'loading'; this.problem = '';
     try {
-      const r = await api<{ players: Player[] }>('GET', '/api/family', this.code);
+      const r = await api<{ players: Player[]; settings?: { showGuest?: boolean } }>('GET', '/api/family', this.code);
       this.players = r.players;
+      this.showGuest = r.settings?.showGuest === true;
       this.status = 'ready';
       return true;
     } catch (e) {
@@ -82,7 +85,7 @@ class Family {
   /** Log out on this device. Players and stars stay online under the code. */
   disconnect(): void {
     this.code = ''; writeLocal(CODE_KEY, null);
-    this.players = []; this.status = 'none'; this.problem = '';
+    this.players = []; this.showGuest = false; this.status = 'none'; this.problem = '';
     this.choose(null);
   }
 
@@ -91,10 +94,19 @@ class Family {
     void progress.use(this.code, p ? p.id : 'guest');
   }
 
-  private async save(next: Player[]): Promise<boolean> {
+  /** True when `typed` is this device's family code. Grown-ups type it to confirm erasing things. */
+  checkCode(typed: string): boolean {
+    return !!this.code && typed.trim().toLowerCase() === this.code.trim().toLowerCase();
+  }
+
+  async setShowGuest(show: boolean): Promise<boolean> {
+    return this.save(this.players, show);
+  }
+
+  private async save(next: Player[], showGuest = this.showGuest): Promise<boolean> {
     try {
-      const r = await api<{ players: Player[] }>('PUT', '/api/family', this.code, { players: next });
-      this.players = r.players; this.status = 'ready'; this.problem = '';
+      const r = await api<{ players: Player[]; settings?: { showGuest?: boolean } }>('PUT', '/api/family', this.code, { players: next, settings: { showGuest } });
+      this.players = r.players; this.showGuest = r.settings?.showGuest === true; this.status = 'ready'; this.problem = '';
       return true;
     } catch (e) {
       this.fail(e);

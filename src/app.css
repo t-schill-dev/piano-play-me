@@ -196,3 +196,4 @@ h2 { font-size: 24px; margin: 14px 0 6px; }
 .plist { display: grid; gap: 8px; margin-top: 10px; }
 @media (max-height: 820px) { .player .face { width: 112px; height: 112px; font-size: 64px; } .players { margin-top: 10px; } }
 @media (max-width: 600px) { .avatar-pick { grid-template-columns: repeat(5, 52px); } }
+h1 .title { background: none; border: 0; padding: 4px 2px; font: inherit; font-weight: 800; color: inherit; }

@@ -5,8 +5,8 @@
  *   GET  /api/songs     -> { songs: Song[] }   the stored list; songs built into the app that the
  *                          store doesn't have yet (the first time: all of them) are added and saved
  *   PUT  /api/songs     -> replace the song list       (header x-admin-key = SONGS_ADMIN_KEY)
- *   GET  /api/family               -> { players }   (header x-family-code)
- *   PUT  /api/family               -> save the players list { players: [{ id, name, avatar }] }
+ *   GET  /api/family               -> { players, settings: { showGuest } }   (family calls need header x-family-code)
+ *   PUT  /api/family               -> save { players: [{ id, name, avatar }], settings? }
  *   GET  /api/progress?player=<id> -> { stars, openAll }
  *   POST /api/progress?player=<id> -> merge and return progress (body { stars, openAll, replace? })
  *
@@ -35,6 +35,12 @@ const familyKey = (code: string): string =>
   'family/' + createHash('sha256').update(code.trim().toLowerCase()).digest('hex');
 
 export interface Player { id: string; name: string; avatar: string; }
+
+/** Family settings. showGuest: offer the Guest player on "Who's playing?" (off by default for a family). */
+export interface FamilySettings { showGuest: boolean; }
+function cleanSettings(v: unknown): FamilySettings {
+  return { showGuest: !!v && typeof v === 'object' && (v as { showGuest?: unknown }).showGuest === true };
+}
 
 /** null when the list is not acceptable; a cleaned copy otherwise. */
 function cleanPlayers(v: unknown): Player[] | null {
@@ -119,15 +125,18 @@ export async function handle(req: Request, store: Store, adminKey: string | unde
     const players = cleanPlayers(await store.get(fam + '/players', { type: 'json' })) ?? [];
 
     if (path === '/api/family') {
-      if (req.method === 'GET') return json({ players });
+      const settings = cleanSettings(await store.get(fam + '/settings', { type: 'json' }));
+      if (req.method === 'GET') return json({ players, settings });
       if (req.method === 'PUT') {
-        const body = (await req.json().catch(() => null)) as { players?: unknown } | null;
+        const body = (await req.json().catch(() => null)) as { players?: unknown; settings?: unknown } | null;
         const next = cleanPlayers(body?.players);
         if (!next) return json({ error: `Up to ${MAX_PLAYERS} players, each with a name and an avatar` }, 400);
+        const nextSettings = body?.settings === undefined ? settings : cleanSettings(body.settings);
         await store.setJSON(fam + '/players', next);
+        await store.setJSON(fam + '/settings', nextSettings);
         // A removed player's stars go with them.
         for (const p of players) if (!next.some((n) => n.id === p.id)) await store.delete(fam + '/progress/' + p.id);
-        return json({ players: next });
+        return json({ players: next, settings: nextSettings });
       }
       return json({ error: 'Method not allowed' }, 405);
     }
