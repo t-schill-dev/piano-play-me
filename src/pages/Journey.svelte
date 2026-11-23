@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { songById, lessonsFor } from '../lib/songs';
+  import { songById, lessonsFor, titleIn } from '../lib/songs';
   import { adventureSongs, type Lang } from '../lib/lists';
   import { progress } from '../lib/progress.svelte';
   import { router } from '../lib/router.svelte';
@@ -25,7 +25,7 @@
       <button class="step" class:locked={!open} class:next={isNext} disabled={!open}
         onclick={() => router.go(`lesson/${lang}/${song.id}/${i}`)}>
         <span class="num">{open ? l.icon : '🔒'}</span>
-        <span><b>Lesson {i + 1}: {l.title}</b><small>{l.kind === 'whole' ? 'Play ' + song.title + ' from start to end' : l.kind === 'notes' ? 'Find the notes of the song' : 'Learn a piece of the song'}</small></span>
+        <span><b>Lesson {i + 1}: {l.title}</b><small>{l.kind === 'whole' ? 'Play ' + titleIn(song, lang) + ' from start to end' : l.kind === 'notes' ? 'Find the notes of the song' : 'Learn a piece of the song'}</small></span>
         <span class="st">{st ? '⭐'.repeat(st) : ''}</span>
       </button>
     {/each}

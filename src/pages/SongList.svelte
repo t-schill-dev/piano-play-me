@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { songById, allNotes } from '../lib/songs';
+  import { songById, allNotes, titleIn } from '../lib/songs';
   import { progress } from '../lib/progress.svelte';
   import { router } from '../lib/router.svelte';
   import { LEVELS, LANGS, LISTS, asLevel, asLang, rememberSongs } from '../lib/lists';
@@ -38,9 +38,9 @@
     {#each songs as s (s.id)}
       {#if s}
         <button class="card" class:done={progress.songDone(s)}
-          onclick={() => { rememberSongs('songs/' + levelInfo.id + '/' + langInfo.id); router.go('play/' + s.id); }}>
+          onclick={() => { rememberSongs('songs/' + levelInfo.id + '/' + langInfo.id); router.go('play/' + s.id + '/' + langInfo.id); }}>
           <span class="ico">{s.emoji}</span>
-          <span><b>{(langInfo.id === 'en' && s.titleEn) || s.title} {progress.songDone(s) ? '🏅' : ''}</b><small>{allNotes(s).length} notes</small></span>
+          <span><b>{titleIn(s, langInfo.id)} {progress.songDone(s) ? '🏅' : ''}</b><small>{allNotes(s).length} notes</small></span>
         </button>
       {/if}
     {/each}

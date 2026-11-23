@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { songById, allNotes, songBreaks, starsFor } from '../lib/songs';
+  import { songById, allNotes, songBreaks, starsFor, titleIn } from '../lib/songs';
+  import type { Lang } from '../lib/lists';
   import { router } from '../lib/router.svelte';
   import NoteRunner from '../components/NoteRunner.svelte';
 
-  let { id }: { id: string } = $props();
+  let { id, lang }: { id: string; lang?: Lang } = $props();
   const song = $derived(songById(id));
   let result = $state<number | null>(null); // stars earned, once finished
   let runKey = $state(0);
@@ -15,7 +16,7 @@
   <p>Hmm, I can't find that song. <button class="pill" onclick={() => router.go('songs')}>Back to songs</button></p>
 {:else}
   <div class="stage fill">
-    <h2 class="center">{song.emoji} {song.title}</h2>
+    <h2 class="center">{song.emoji} {titleIn(song, lang)}</h2>
     {#if result != null}
       <div class="finish">
         <div class="big">You played the whole song! 🎉</div>

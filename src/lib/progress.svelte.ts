@@ -132,9 +132,9 @@ class Progress {
     return this.starsOf(song.id, lessonCount(song) - 1) > 0;
   }
 
-  /** A place opens when the one before it on the same language's path is finished. */
-  songUnlocked(path: Song[], index: number): boolean {
-    return index === 0 || this.data.openAll || (index > 0 && this.songDone(path[index - 1]));
+  /** Every Adventure place is open. Kids can pick any song, even one they do not know yet. */
+  songUnlocked(_path: Song[], _index: number): boolean {
+    return true;
   }
 
   lessonUnlocked(songId: string, lesson: number): boolean {
