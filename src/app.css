@@ -122,3 +122,16 @@ details.debug summary { font-weight: 700; cursor: pointer; font-size: 16px; }
 .log { font-family: ui-monospace, Menlo, monospace; font-size: 13px; margin-top: 10px; white-space: pre-wrap; color: var(--muted); max-height: 160px; overflow: auto; }
 .tips { font-size: 14px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
 @media (max-width: 600px) { .bubble .big { font-size: 30px; } .ctrl { grid-template-columns: 1fr; } .nb { width: 38px; height: 38px; font-size: 16px; } }
+
+/* Older Safari (before 14.1) has no flex `gap`: space flex items with margins. */
+.no-flex-gap header.top > *,
+.no-flex-gap .brand > *,
+.no-flex-gap .row > *,
+.no-flex-gap .sub-tabs > *,
+.no-flex-gap .track > *,
+.no-flex-gap .phrase > *,
+.no-flex-gap .player-ctrls > *,
+.no-flex-gap .card > *,
+.no-flex-gap .pip > *,
+.no-flex-gap .step > * { margin: 4px; }
+.no-flex-gap .path > * { margin-bottom: 12px; }
