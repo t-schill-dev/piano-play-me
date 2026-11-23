@@ -23,11 +23,11 @@ export const LISTS: Record<Level, Record<Lang, string[]>> = {
     de: ['entchen', 'haenschen', 'weihnachts', 'summ', 'kuckuck', 'backe'],
   },
   challenging: {
-    en: ['bridge', 'row', 'jacques', 'jingle', 'bingo'],
+    en: ['bridge', 'row', 'jacques', 'jingle', 'bingo', 'macdonald'],
     de: ['jacques', 'fuchs', 'voegel', 'maennlein', 'vogel', 'oma'],
   },
   hard: {
-    en: ['shenandoah'],
+    en: ['shenandoah', 'birthday'],
     de: ['stille', 'tannenbaum', 'kinderlein', 'mond', 'sternlein', 'gedanken'],
   },
 };

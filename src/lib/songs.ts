@@ -189,6 +189,18 @@ export const SONGS: Song[] = [
     place: 'Free Field', friend: 'the Thoughts',
     intro: 'The thoughts in Free Field want to fly high. Play their song and let them go wherever they like.',
     done: 'The thoughts fly free over the field. You can think whatever you like, always!' },
+  // Old MacDonald and Happy Birthday for the English lists. Old MacDonald's notes come from a
+  // note list the grown-up provided; Happy Birthday's notes are from memory. Check both by ear.
+  { id: 'macdonald', title: 'Old MacDonald Had a Farm', emoji: '🐷', bpm: 100,
+    notes: 'G G G D E E D:2 | B B A A G:3 | D G G G D E E D:2 | B B A A G:4 | D:0.5 D:0.5 G G G D:0.5 D:0.5 G G G:2 | G:0.5 G:0.5 G G:0.5 G:0.5 G G:0.5 G:0.5 G:0.5 G:0.5 G G | G G G D E E D:2 | B B A A G:4',
+    place: 'Old Farm Gate', friend: 'the Farmer',
+    intro: 'Old MacDonald needs help with his farm. Every animal wants to make its sound, so play his song for them.',
+    done: 'E-I-E-I-O! Every animal on the farm makes its sound. What a noisy, happy farm!' },
+  { id: 'birthday', title: 'Happy Birthday', emoji: '🥳', bpm: 100,
+    notes: 'G G A G C B:2 | G G A G D C:2 | G G G E C B A:2 | F F E C D C:4',
+    place: 'Party Hall', friend: 'the Party Friends',
+    intro: 'Everyone is getting ready for a birthday party in the Party Hall. Play the birthday song to start it.',
+    done: 'Hooray! The party has started, and everyone sings along. Happy birthday to you!' },
   // English songs (traditional / public domain). Notes written from memory: check by ear.
   {
     id: 'hickory', title: 'Hickory Dickory Dock', emoji: '🐭', bpm: 100,
