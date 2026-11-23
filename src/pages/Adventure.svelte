@@ -15,6 +15,11 @@
     Welcome back! You have {progress.totalStars()} stars. Where shall we go next?
   {/if}
 </Pip>
+{#if !progress.saving}
+  <p class="muted small" style="margin:0 0 8px">Playing as Guest, so stars are not saved. To keep stars, pick or add a player.</p>
+{:else if progress.status === 'offline'}
+  <p class="muted small" style="margin:0 0 8px">No internet right now. Stars will be saved when it is back.</p>
+{/if}
 <div class="path">
   {#each SONGS as s, i (s.id)}
     {@const open = progress.songUnlocked(i)}

@@ -121,6 +121,11 @@ export const SONGS: Song[] = [
 ];
 
 const parsed = new Map<string, Note[][]>();
+/** Swap in the song list saved online (see /api/songs). The built-in list stays the fallback. */
+export function useSongs(list: Song[]): void {
+  SONGS.splice(0, SONGS.length, ...list);
+  parsed.clear();
+}
 export function phrasesOf(song: Song): Note[][] {
   let p = parsed.get(song.id);
   if (!p) { p = parse(song.notes); parsed.set(song.id, p); }
