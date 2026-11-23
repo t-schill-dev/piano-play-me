@@ -197,7 +197,7 @@ export const SONGS: Song[] = [
     intro: 'Old MacDonald needs help with his farm. Every animal wants to make its sound, so play his song for them.',
     done: 'E-I-E-I-O! Every animal on the farm makes its sound. What a noisy, happy farm!' },
   { id: 'birthday', title: 'Happy Birthday', emoji: '🥳', bpm: 100,
-    notes: 'G G A G C B:2 | G G A G D C:2 | G G G E C B A:2 | F F E C D C:4',
+    notes: 'G:0.75 G:0.25 A G C5 B:2 | G:0.75 G:0.25 A G D C5:2 | G:0.75 G:0.25 G E C5 B A:2 | F:0.75 F:0.25 E C5 D C5:2',
     place: 'Party Hall', friend: 'the Party Friends',
     intro: 'Everyone is getting ready for a birthday party in the Party Hall. Play the birthday song to start it.',
     done: 'Hooray! The party has started, and everyone sings along. Happy birthday to you!' },
