@@ -27,7 +27,7 @@ export const LISTS: Record<Level, Record<Lang, string[]>> = {
     de: ['jacques', 'fuchs', 'voegel', 'maennlein', 'vogel', 'oma'],
   },
   hard: {
-    en: ['shenandoah', 'birthday'],
+    en: ['shenandoah', 'birthday', 'saints', 'yankee', 'wishyou', 'grace'],
     de: ['stille', 'tannenbaum', 'kinderlein', 'mond', 'sternlein', 'gedanken'],
   },
 };
