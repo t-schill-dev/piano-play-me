@@ -35,7 +35,7 @@
   <p>This lesson isn't open yet. <button class="pill" onclick={() => router.go('journey/' + lang + '/' + id)}>Back</button></p>
 {:else}
   <div class="stage fill">
-    <h2 class="center">{song.emoji} Lesson {n + 1}: {lesson.title}</h2>
+    <h2 class="center">{song.emoji} {titleIn(song, lang)} · Lesson {n + 1}: {lesson.title}</h2>
     {#if earned != null}
       <div class="finish">
         <div class="big">{isLast ? 'You can play ' + titleIn(song, lang) + '! 🏅' : 'Lesson done! 🎉'}</div>
@@ -45,10 +45,10 @@
           {#if !isLast}
             <button class="pill go" onclick={() => router.go(`lesson/${lang}/${id}/${n + 1}`)}>Next lesson ▶</button>
           {:else if nextSong}
-            <button class="pill go" onclick={() => router.go('journey/' + lang + '/' + nextSong.id)}>Go to {nextSong.place} ▶</button>
+            <button class="pill go" onclick={() => router.go('journey/' + lang + '/' + nextSong.id)}>Go to {titleIn(nextSong, lang)} ▶</button>
           {/if}
           <button class="pill" onclick={again}>↺ Try again</button>
-          <button class="pill" onclick={() => router.go('journey/' + lang + '/' + id)}>Back to {song.place}</button>
+          <button class="pill" onclick={() => router.go('journey/' + lang + '/' + id)}>Back to {titleIn(song, lang)}</button>
         </div>
       </div>
     {:else}
