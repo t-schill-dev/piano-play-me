@@ -9,13 +9,27 @@
   async function add(name: string, avatar: string): Promise<void> {
     if (await family.addPlayer(name, avatar)) adding = false;
   }
+  let missingCode = $state(''); // set when the typed code has no family yet: shows the popup
+  let busy = $state(false);
+
   async function login(): Promise<void> {
-    if (await family.connect(codeInput)) { loggingIn = false; codeInput = ''; }
+    busy = true;
+    const r = await family.connect(codeInput);
+    busy = false;
+    if (r === 'ok') { loggingIn = false; codeInput = ''; }
+    else if (r === 'missing') missingCode = codeInput.trim();
+  }
+  async function createFamily(): Promise<void> {
+    busy = true;
+    const ok = await family.create(missingCode);
+    busy = false;
+    if (ok) { missingCode = ''; loggingIn = false; codeInput = ''; adding = true; }
   }
 </script>
 
 <div class="who">
   <div class="hello"><div class="big">Who's playing?</div></div>
+  {#if family.notice}<p class="notice center">{family.notice}</p>{/if}
 
   {#if adding}
     <div class="stage">
@@ -64,3 +78,18 @@
     {/if}
   {/if}
 </div>
+
+{#if missingCode}
+  <div class="overlay" role="dialog" aria-modal="true" aria-labelledby="missing-title">
+    <div class="sheet small">
+      <h2 id="missing-title" style="margin-top:0">No family found with this code</h2>
+      <p>There is no family with the code <b>{missingCode}</b> yet. If you mistyped it, try again.
+        If this is a new family, you can create one with this code.</p>
+      {#if family.problem}<p class="err">{family.problem}</p>{/if}
+      <div class="row">
+        <button class="pill go" onclick={createFamily} disabled={busy}>Create new family</button>
+        <button class="pill" onclick={() => { missingCode = ''; codeInput = ''; }} disabled={busy}>Try again</button>
+      </div>
+    </div>
+  </div>
+{/if}

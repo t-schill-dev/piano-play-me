@@ -5,8 +5,10 @@
  *   GET  /api/songs     -> { songs: Song[] }   the stored list; songs built into the app that the
  *                          store doesn't have yet (the first time: all of them) are added and saved
  *   PUT  /api/songs     -> replace the song list       (header x-admin-key = SONGS_ADMIN_KEY)
- *   GET  /api/family               -> { players, settings: { showGuest } }   (family calls need header x-family-code)
- *   PUT  /api/family               -> save { players: [{ id, name, avatar }], settings? }
+ *   GET  /api/family               -> { exists, players, settings: { showGuest } }   (family calls need header x-family-code)
+ *   PUT  /api/family               -> save { players: [{ id, name, avatar }], settings?, create? }
+ *                                     (create: true is needed to start a family for a new code)
+ *   POST /api/family/move          -> { newCode }: move players, settings and stars to a new code
  *   GET  /api/progress?player=<id> -> { stars, openAll }
  *   POST /api/progress?player=<id> -> merge and return progress (body { stars, openAll, replace? })
  *
@@ -118,17 +120,45 @@ export async function handle(req: Request, store: Store, adminKey: string | unde
     return json({ error: 'Method not allowed' }, 405);
   }
 
-  if (path === '/api/family' || path === '/api/progress') {
+  if (path === '/api/family' || path === '/api/family/move' || path === '/api/progress') {
     const code = req.headers.get('x-family-code') ?? '';
     if (code.trim().length < MIN_CODE) return json({ error: `The family code needs at least ${MIN_CODE} characters` }, 400);
     const fam = familyKey(code);
-    const players = cleanPlayers(await store.get(fam + '/players', { type: 'json' })) ?? [];
+    const rawPlayers = await store.get(fam + '/players', { type: 'json' });
+    const rawSettings = await store.get(fam + '/settings', { type: 'json' });
+    const exists = rawPlayers != null || rawSettings != null;
+    const players = cleanPlayers(rawPlayers) ?? [];
+    const settings = cleanSettings(rawSettings);
+
+    if (path === '/api/family/move') {
+      // Change the family code: everything moves to the new code, nothing is left under the old one.
+      if (req.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
+      if (!exists) return json({ error: 'No family found with this code' }, 404);
+      const body = (await req.json().catch(() => null)) as { newCode?: unknown } | null;
+      const newCode = typeof body?.newCode === 'string' ? body.newCode.trim() : '';
+      if (newCode.length < MIN_CODE) return json({ error: `The new family code needs at least ${MIN_CODE} characters` }, 400);
+      const to = familyKey(newCode);
+      if (to === fam) return json({ error: 'The new code is the same as the old one' }, 400);
+      if ((await store.get(to + '/players', { type: 'json' })) != null || (await store.get(to + '/settings', { type: 'json' })) != null)
+        return json({ error: 'That code is already used by another family. Please pick a different one.' }, 409);
+      for (const p of players) {
+        const stars = await store.get(fam + '/progress/' + p.id, { type: 'json' });
+        if (stars != null) await store.setJSON(to + '/progress/' + p.id, stars);
+      }
+      await store.setJSON(to + '/settings', settings);
+      await store.setJSON(to + '/players', players); // written last: the new family is complete once it exists
+      for (const p of players) await store.delete(fam + '/progress/' + p.id);
+      await store.delete(fam + '/players');
+      await store.delete(fam + '/settings');
+      return json({ ok: true });
+    }
 
     if (path === '/api/family') {
-      const settings = cleanSettings(await store.get(fam + '/settings', { type: 'json' }));
-      if (req.method === 'GET') return json({ players, settings });
+      if (req.method === 'GET') return json({ exists, players, settings });
       if (req.method === 'PUT') {
-        const body = (await req.json().catch(() => null)) as { players?: unknown; settings?: unknown } | null;
+        const body = (await req.json().catch(() => null)) as { players?: unknown; settings?: unknown; create?: unknown } | null;
+        // A new family is only made on purpose, so a mistyped code can't quietly start an empty one.
+        if (!exists && body?.create !== true) return json({ error: 'No family found with this code' }, 404);
         const next = cleanPlayers(body?.players);
         if (!next) return json({ error: `Up to ${MAX_PLAYERS} players, each with a name and an avatar` }, 400);
         const nextSettings = body?.settings === undefined ? settings : cleanSettings(body.settings);
