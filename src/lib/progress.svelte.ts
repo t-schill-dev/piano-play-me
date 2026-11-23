@@ -3,7 +3,7 @@
  * Stars are saved online in Netlify Blobs through /api/progress, never on the device.
  * The Guest player (and anyone playing before a family code is set) starts fresh and is not saved.
  */
-import { SONGS, lessonCount, type Song } from './songs';
+import { lessonCount, type Song } from './songs';
 
 export interface Saved { stars: Record<string, number[]>; openAll: boolean; }
 export type SaveStatus = 'none' | 'loading' | 'saving' | 'saved' | 'offline' | 'error';
@@ -132,8 +132,9 @@ class Progress {
     return this.starsOf(song.id, lessonCount(song) - 1) > 0;
   }
 
-  songUnlocked(index: number): boolean {
-    return index === 0 || this.data.openAll || this.songDone(SONGS[index - 1]);
+  /** A place opens when the one before it on the same language's path is finished. */
+  songUnlocked(path: Song[], index: number): boolean {
+    return index === 0 || this.data.openAll || (index > 0 && this.songDone(path[index - 1]));
   }
 
   lessonUnlocked(songId: string, lesson: number): boolean {
