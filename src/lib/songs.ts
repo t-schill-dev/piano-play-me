@@ -189,6 +189,11 @@ export const SONGS: Song[] = [
     place: 'Free Field', friend: 'the Thoughts',
     intro: 'The thoughts in Free Field want to fly high. Play their song and let them go wherever they like.',
     done: 'The thoughts fly free over the field. You can think whatever you like, always!' },
+  { id: 'tragt', title: 'Tragt in die Welt nur ein Licht', emoji: '🏮', bpm: 96,
+    notes: 'B:1 B:0.5 B:0.5 A:1 A:0.5 A:0.5 G:4 E:1 E:0.5 E:0.5 G:1 G:0.5 E:0.5 D:4 | G:1 G:0.5 G:0.5 A:1 D:0.5 C:0.5 B:4 D:1 D:0.5 D:0.5 D:1 D:1 G:4',
+    place: 'Lantern Lane', friend: 'the Lantern Children',
+    intro: 'The lanterns on Lantern Lane have gone dark. Play their song and the light will shine again.',
+    done: 'The lanterns glow bright and the whole street smiles. Let your light shine!' },
   // Old MacDonald and Happy Birthday for the English lists. Old MacDonald's notes come from a
   // note list the grown-up provided; Happy Birthday's notes are from memory. Check both by ear.
   { id: 'macdonald', title: 'Old MacDonald Had a Farm', emoji: '🐷', bpm: 100,
